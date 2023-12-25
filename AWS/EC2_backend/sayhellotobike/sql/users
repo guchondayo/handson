@@ -1,0 +1,32 @@
+CREATE TABLE Users (
+  user_id SERIAL PRIMARY KEY,
+  user_name VARCHAR NOT NULL,
+  email VARCHAR NOT NULL UNIQUE,
+  password VARCHAR NOT NULL,
+  favorite_place VARCHAR,
+  trips_id INT,
+  FOREIGN KEY (trips_id) REFERENCES Trips(trip_id)
+);
+
+INSERT INTO Users (user_name, email, password, favorite_place, trips_id)
+VALUES ('John Doe', 'john@example.com', 'password123', 'Tokyo', 1);
+
+SELECT *
+FROM Users
+WHERE trips_id = (
+  SELECT MAX(trips_id)
+  FROM Users
+)
+
+-- まとめると
+WITH new_user AS (
+  INSERT INTO Users (user_name, email, password, favorite_place, trips_id)
+  VALUES ('John Doe', 'john@example.com', 'password123', 'Tokyo', 1)
+  RETURNING *
+)
+SELECT *
+FROM Users
+WHERE trips_id = (
+  SELECT MAX(trips_id)
+  FROM new_user
+);

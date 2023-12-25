@@ -1,0 +1,76 @@
+<input type="checkbox" id="menu-toggle">
+<ul>
+    <li class="a"></li>
+    <li class="b"></li>
+    <li class="c"></li>
+</ul>
+<div class="waku">
+    <div class="btn"></div>
+    <div class="btn"></div>
+    <div class="btn"></div>
+    
+</div>
+
+<style>
+
+.waku{
+    width: 200px;
+    background-color: pink;
+    height: 1000px;
+    position: fixed;
+    top: 0;
+    left: -200px;
+    transition: left 0.3s ease;
+}
+
+ul{
+    width: 120px;
+    height: 120px;
+    background-color: aqua;
+    position: relative;
+    list-style: none;
+}
+.a{
+    width: 80px;
+    height: 10px;
+    background-color: black;
+    position: absolute;
+    top: 30px;
+    left: 40px;
+}
+
+.b{
+    width: 80px;
+    height: 10px;
+    background-color: black;
+    position: absolute;
+    top: 60px;
+    left: 40px;
+}
+.c{
+    width: 80px;
+    height: 10px;
+    background-color: black;
+    position: absolute;
+    top: 90px;
+    left: 40px;
+}
+
+#menu-toggle:checked ~ .waku {
+      left: 0;
+    }
+
+    #menu-toggle:checked ~ ul {
+      left: 0;
+    }
+    #menu-toggle ~ .waku {
+      left: -200px;
+    }
+
+    #menu-toggle ~ ul {
+      left: -2
+      00px;
+    }
+
+
+</style>
