@@ -1,0 +1,24 @@
+canvas要素を作成するうえで、考えておくべきこと
+メリット
+⇒動きを座標として細かく指定することができる
+1.canvas要素を作成する
+2.中央ぞろえにする
+
+★かく順番
+1.基本的にfillRectstrokeRectは最後
+【】
+https://developer.mozilla.org/ja/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
+
+if canvas getcontextは必要かも
+
+【イメージ】
+1.canvasは画用紙
+2.contextは筆
+
+【★直線はstroke/三角形以上はfill】
+    ctx.beginPath();
+    ctx.moveTo(75, 50);
+    ctx.lineTo(100, 75);
+    ctx.lineTo(100, 25);
+    ctx.fill();
+    ctx.stroke();

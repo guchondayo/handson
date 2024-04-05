@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 見てもらえばわかるけど、position absoluteを入れた時点で -->
+    <!-- これは結果的に２番目と三番目が重なっている時はこんな感じ -->
+    <div class="container">
+      <div class="first box">１番目</div>
+      <div class="second box">２番目</div>
+      <div class="third box">３番目</div>
+    </div>
+  </body>
+  <style>
+    .container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      background-color: aquamarine;
+    }
+    .box {
+      height: 100px;
+      width: 100px;
+      color: aliceblue;
+    }
+    .first {
+      background-color: aqua;
+    }
+    .second {
+      background-color: blueviolet;
+      position: absolute;
+      top: 50px;
+    }
+    .third {
+      background-color: black;
+    }
+  </style>
+</html>

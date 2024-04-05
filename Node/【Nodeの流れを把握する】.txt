@@ -1,0 +1,70 @@
+【Nodeの流れを把握する】＊大事
+Node⇒サーバー
+express⇒ルーティングとか、諸々を簡単に実装してくれる
+
+1.まずは、ルーティングに行こう
+// 資料作成・承認画面表示
+
+1.ルーターについて
+router.get('/', addAccessLog(SERVICE_NAME, '資料作成・承認画面表示'),
+    async (req, res) => initializeList(req, res));
+第一引数⇒こいつを読んだら俺は動くぜ
+第二引数⇒おれはログを取っておくぜ
+第三引数⇒しょっぱな俺は実行されるぜ
+
+
+2.第三引数⇒しょっぱな俺は実行されるぜが、initializeList(req, res))ってことね
+async function initializeList(req, res) {
+ここでAPIとかもろもろの事前準備を始めるぜ
+｝
+
+3.準備できたら、Viewファイルに持っていくぜ
+res.render('./document-reservation/list', {オブジェクト}
+第一引数⇒Viewの行先だぜ
+第二引数⇒持っていく荷物だぜ『オブジェクトにしておくぜ』
+＊持っていく荷物は事前にinitializeListでまとめておいてくれよな！
+
+＊＊ここからフロントエンド＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+4.テンプレートエンジンに着陸します
+【router】
+res.render('./document-reservation/list',
+ {listData:["aaa","iii","uuu"]}
+【View】
+<%= listData %>
+
+5.画面に値を表示されたがいいけど、この後この値を発火させたり、加工したいなぁ
+
+1.もしViewに表示させる＋テンプレートエンジンで計算は事足りる⇒listDataみたいにルータから渡した値を使おう
+2.あ、でもその値をJSとして使うのであれば、紐づけるトリガーが必要だよね！
+だったら値を取得しようか！
+⇒routerから持ってきたら、『value』にしまおうね！！！！
+
+＊＊＊＊＊Javascriptへ、、、＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+Qそもそもさ、PUBLICとはどうやって紐づけしているの？
+A app.jsファイルを見てごらんよ。かいてあるからさ
+app.use(express.static('./public'));＊＊おそらく同じファイルであつかってくれているかなぁ
+M.AutoInit()はCSSのグローバルオブジェクト
+
+6.ビューからJSに実行したいなぁ
+＊＊別にビューで保持するわけでもなく、引数ぶっぱなすだけであれば、別に直接入力してもいいよ！
+href="javascript:openConsentModal('<%= requestInfo.electronic_approval_application_id %>', '<%= requestInfo.updated %>', '<%= approvalIdList[targetIndex] %>')">
+
+★サーバーに送信する方法は、、、
+1.form要素を使う(サーバーに負担がかからない仕組みなんだね)
+2.AjaxやJSONを使うということか
+＊＊＊パターン1　モーダル
+今回は（route→View→js→view(form)に代入
+＊＊＊パターン2を見てみようか
+★form要素を使ってサーバー送信する条件
+1.IDで紐づけてsubmitしよう！
+2.input(nameとvalueは必須)はパラメータになるよ
+3.行先はactionに聞いてくれ！！！！
+
+フォーム内にあること：フォーム要素(<form>タグ)内に存在する必要があります。
+名前属性（name）があること：各入力要素には名前属性が必要です。これは、サーバーでデータを識別するためのキーとして使用されます。
+値があること：各入力要素には値が必要です。テキスト入力、選択ボックス、ラジオボタンなど、各入力要素には値が含まれます。
+これらの条件を満たす入力要素は、フォームが送信されるとフォームデータとしてサーバーに送信されます。
+
+
+req.query.search_status_tab
+

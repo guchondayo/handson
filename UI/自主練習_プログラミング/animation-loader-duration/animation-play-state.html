@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="square" id="square"></div>
+      <select value="-" id="selectbox">
+        <option value="on">on</option>
+        <option value="off">off</option>
+      </select>
+    </div>
+  </body>
+  <!-- 1.動いていない完成図を作る -->
+  <!-- 2.共通の動きを作る -->
+  <!-- 3.各自の動きを作る -->
+  <style>
+    .container {
+      text-align: center;
+    }
+    .square {
+      display: inline-block;
+      background-color: aqua;
+      width: 100px;
+      height: 100px;
+      /* ここから動きを決める作業 */
+      animation: test 1.8s infinite;
+      animation-direction: alternate;
+    }
+    /* 共通の動きを作る */
+    @keyframes test {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+    }
+    /* ⇒
+    ⇐ */
+  </style>
+  <script>
+    const square = document.getElementById("square");
+    const btn = document.getElementById("selectbox");
+    btn.addEventListener("change", (event) => {
+      console.log("Selected value-event:", event.target.value);
+      console.log("Selected value-noevent:", btn.value);
+
+      // この例では、選択された値に応じて何かしらのアクションを実行することができます
+      if (btn.value === "on") {
+        square.style.backgroundColor = "aqua";
+      } else {
+        square.style.backgroundColor = "gray";
+      }
+
+      if (btn.value === "on") {
+        square.style.animationPlayState = "running";
+      } else {
+        square.style.animationPlayState = "paused";
+      }
+    });
+  </script>
+</html>

@@ -1,0 +1,15 @@
+中長期補修計画年
+中長期補修計画年 有効/無効
+
+
+waiting_approval
+
+
+status_tab_card_waiting_approval
+
+
+      if (isDisplayAllData !== 'false') {
+        pageTitle = '工事報告書参照';
+      } else {
+        pageTitle = 'その他決定書・報告書参照';
+      }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    
+  let ini = true; // ini 変数を外側の関数の外で宣言し、初期化する
+
+  function realTest() {
+    if (ini) {
+      ini = false;
+      return "OFFにします";
+    } else {
+      ini = true;
+      return "ONにします";
+    }
+  }
+
+
+// それぞれの呼び出しで同じ ini 変数を共有することになります;
+console.log(realTest())
+console.log(realTest())
+console.log(realTest())
+console.log(realTest())
+
+</script>
+</html>

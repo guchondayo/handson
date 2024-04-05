@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Example</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="400" height="400"></canvas>
+
+    <script>
+        // WebGLの初期化
+        const canvas = document.getElementById('webgl-canvas');
+        const gl = canvas.getContext('webgl');
+
+        if (!gl) {
+            alert('WebGLがサポートされていません。');
+        }
+
+        // 頂点シェーダーのソースコード
+        const vertexShaderSource = `
+            attribute vec2 a_position;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        `;
+
+        // フラグメントシェーダーのソースコード
+        const fragmentShaderSource = `
+            precision mediump float;
+            uniform vec4 u_color;
+            void main() {
+                gl_FragColor = u_color;
+            }
+        `;
+
+        // 頂点シェーダーのコンパイル
+        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, vertexShaderSource);
+        gl.compileShader(vertexShader);
+
+        // フラグメントシェーダーのコンパイル
+        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, fragmentShaderSource);
+        gl.compileShader(fragmentShader);
+
+        // シェーダープログラムの作成
+        const shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+        gl.useProgram(shaderProgram);
+
+        // 頂点座標データ(ここをいじると感覚がつかめる)
+        const vertices = [
+            0.0, 0.5,
+            -0.5, -0.5,
+            0.5, -0.5
+        ];
+
+        // 頂点バッファの作成
+        const vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        // attribute変数の設定
+        const positionAttributeLocation = gl.getAttribLocation(shaderProgram, 'a_position');
+        gl.enableVertexAttribArray(positionAttributeLocation);
+        gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+        // uniform変数の設定
+        const colorUniformLocation = gl.getUniformLocation(shaderProgram, 'u_color');
+        gl.uniform4fv(colorUniformLocation, [1.0, 0.0, 0.0, 1.0]);
+    </script>
+</body>
+</html>

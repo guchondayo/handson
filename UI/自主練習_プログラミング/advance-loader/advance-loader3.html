@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .parent {
+        width: 500px;
+        height: 500px;
+        background-color: aqua;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .parent span {
+        display: inline-block;
+        background-color: black;
+        height: 50px;
+        width: 10px;
+        margin: 5px;
+      }
+      /* アニメーションのタイミングをずらすときは、別々のクラスに同じアニメーションを指定したほうがいいかもしれない、、 */
+      /* 要ったら行きっぱなしだと、スタートとエンドがきれいにつながらなくなる */
+      /* ⇒0％と100％でスタートとエンドを同じ値にしてあげよう */
+      .first {
+        animation: move 2s ease-in 0s infinite;
+      }
+      .second {
+        animation: move 2s ease-in 0.5s infinite;
+      }
+      .third {
+        animation: move 2s ease-in 0.8s infinite;
+      }
+      @keyframes move {
+        0% {
+          height: 50px;
+        }
+        50% {
+          height: 0px;
+        }
+        100% {
+          height: 50px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="parent">
+        <span class="first"></span>
+        <span class="second"></span>
+        <span class="third"></span>
+      </div>
+    </div>
+  </body>
+</html>

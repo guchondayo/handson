@@ -1,0 +1,20 @@
+【保存/ロードの概念】
+1.使うメソッド
+＊save()メソッド
+＊restore()メソッド
+★セーブできるもの
+ctx.メソッド(コンテキストのメソッド)
+例）   
+ctx.fillStyle: 塗りつぶしの色
+ctx.strokeStyle: 線の色
+ctx.lineWidth: 線の幅
+ctx.font: テキストのフォント
+ctx.globalAlpha: 全体の透明度
+ctx.transform(), ctx.translate(), ctx.rotate(): 座標変換に関するメソッド
+ctx.beginPath(), ctx.closePath(), ctx.moveTo(), ctx.lineTo(): パスの操作に関する
+★用途
+1.コンテキスト～
+2.セーブ
+2.別なコンテキスト
+3.あ、元のコンテキスト～に戻りたい
+4.セーブ

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="square"></div>
+    </div>
+  </body>
+  <!-- 1.動いていない完成図を作る -->
+  <!-- 2.共通の動きを作る -->
+  <!-- 3.各自の動きを作る -->
+  <style>
+    .container {
+      text-align: center;
+    }
+    .square {
+      display: inline-block;
+      background-color: aqua;
+      width: 100px;
+      height: 100px;
+      /* ここから動きを決める作業 */
+      animation: test 1.8s infinite;
+      animation-direction: alternate;
+    }
+    /* 共通の動きを作る */
+    @keyframes test {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+    }
+    /* ⇒
+    ⇐ */
+  </style>
+</html>

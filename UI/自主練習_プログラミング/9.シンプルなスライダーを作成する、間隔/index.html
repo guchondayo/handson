@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Slider</title>
+    <script>
+      // ミリ秒(3000ミリ秒->3秒)
+      var setting_time = 3000;
+
+      // 切替回数(0で指定なし)
+      var numberOfIterations = 0;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // figure自体にclass指定がある場合
+        //var figure = document.querySelector('.change');
+        //var images = figure.children;
+        //var loopVal = Array.from(images);
+
+        // img自体にclass指定がある場合
+        var images = document.querySelectorAll(".change");
+        var loopVal = images;
+
+        var currentImageIndex = 0;
+
+        function showNextImage() {
+          // 現在の画像を非表示にする
+          images[currentImageIndex].style.display = "none";
+
+          // 次の画像のインデックスを計算
+          currentImageIndex = (currentImageIndex + 1) % images.length;
+
+          // 次の画像を表示する
+          images[currentImageIndex].style.display = "block";
+        }
+
+        // 初回表示のための処理
+        loopVal.forEach(function (image, index) {
+          if (index !== currentImageIndex) {
+            image.style.display = "none";
+          }
+        });
+
+        // 指定時間毎に画像を切り替える
+        var intervalId = setInterval(showNextImage, setting_time);
+
+        var iterationCount = 0;
+
+        function stopSlider() {
+          if (numberOfIterations == 0) return;
+
+          clearInterval(intervalId);
+
+          // 指定回数繰り返し後に停止する
+          iterationCount++;
+          if (iterationCount === numberOfIterations) {
+            clearInterval(intervalId);
+          }
+        }
+
+        // 一定回数繰り返し後に停止する場合
+        setTimeout(stopSlider, numberOfIterations * setting_time);
+      });
+    </script>
+  </head>
+  <body>
+    <figure>
+      <a href="https://www.google.co.jp/"
+        ><img class="change" src="a.png" alt="a"
+      /></a>
+      <a href="https://www.yahoo.co.jp/"
+        ><img class="change" src="b.png" alt="b"
+      /></a>
+      <a href="https://www.msn.com/"
+        ><img class="change" src="c.png" alt="c"
+      /></a>
+    </figure>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function firstCallBack(){
+            console.log("firstCallBack")
+        }
+        function secondCallBack(){
+console.log("secondCallBack")
+        }
+        function thirdCallBack(){
+            console.log("thirdCallBack")
+        }
+
+                function firstSecondCallBack(){
+            firstCallBack()
+            secondCallBack()
+        }
+                function firstThirdCallBack(){
+            firstCallBack()
+            thirdCallBack()
+        }
+    </script>
+</body>
+</html>

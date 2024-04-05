@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 要素によって取得できるメソッドやプロパティおが変わるよ！ -->
+    <p id="p">aaa</p>
+    <canvas id="test">canvas</canvas>
+</body>
+<style>
+    #test{
+        width: 100%;
+        height: 100vh;
+        background-color: aqua;
+    }
+</style>
+<script>
+    const canvas = document.getElementById("test")
+    console.dir(canvas)
+    const pp = document.getElementById("p")
+    console.dir(pp)
+</script>
+</html>

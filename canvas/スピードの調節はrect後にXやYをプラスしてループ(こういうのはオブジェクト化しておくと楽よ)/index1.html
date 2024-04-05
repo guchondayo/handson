@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #test{
+            width: 100%;
+            height: 100vh;
+            background-color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="test">canvas</canvas>
+    <script>
+        const canvas = document.getElementById("test");
+        const ctx = canvas.getContext("2d");
+
+        let x = 1; // 初期 x 座標
+
+        function roop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスをクリア
+            ctx.save()
+            ctx.translate(x, 1); // x 座標に移動
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, 10, 10); // 四角形を描画
+            // 1にしてみる
+            // 2にしてみる
+            // 3にしてみる
+            // ここ！！↓ここでスピードを制御できる
+            x += 2; // x 座標を増加してアニメーションを行う
+            ctx.restore()
+            requestAnimationFrame(roop); // アニメーションを再開
+        }
+
+        requestAnimationFrame(roop); // アニメーションを開始
+
+        
+// 【くそ重要！】2.キャンバスの状態を保存する理由
+// ⇒canvasは初期化を行わないとだめ
+// 『さらに』が恐ろしい！！！！！！！！！
+// なぜなら
+// 描画(fillrectとかstrokerectなど)した後に、
+// また
+// ctx.scale(1.2, 1.2)やctx.translate(x, 75)をすると
+// 例えば次の描画は
+// 1.2　X　1.2の『さらに』１．４倍
+// 75移動したところから『さらに』75移動してしまうからである！
+// ★前回より変化させたいときはどうする？
+// 次に描画させたい値はグローバル変数にして、描画した後に＋1なりその変数を追加すればよし
+    </script>
+</body>
+</html>

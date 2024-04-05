@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button class="question1">ボタンが動いたら合格</button>
+  </body>
+  <script>
+    const question1 = document.querySelector(".question1");
+    console.log("テキストの確認", question1.textContent);
+    class Fire {
+      constructor(myClassName, eventName) {
+        this.myClassName = document.querySelector(myClassName);
+        this.eventFire = this.myClassName.addEventListener(eventName, () => {
+          console.log("イベントが発火しました");
+        });
+      }
+    }
+    const BtnFire = new Fire(".question1", "click");
+    BtnFire.eventFire;
+  </script>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        background-color: white;
+      }
+      .maru {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+
+        animation: aaa 5s infinite;
+      }
+      @keyframes aaa {
+        25% {
+          border-top: 1px;
+          border-color: black;
+          border-style: solid;
+        }
+        50% {
+          border-top: 1px;
+          border-right: 1px;
+          border-color: black;
+          border-style: solid;
+        }
+        50% {
+          border-top: 1px;
+          border-right: 1px;
+          border-left: 1px;
+          border-color: black;
+          border-style: solid;
+        }
+        100% {
+          border: 1px;
+          border-color: black;
+          border-style: solid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <span class="maru"></span>
+    </div>
+  </body>
+</html>

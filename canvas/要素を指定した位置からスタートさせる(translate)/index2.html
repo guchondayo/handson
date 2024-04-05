@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #test{
+            width: 100%;
+            height: 100vh;
+            background-color: aqua;
+        }
+    </style>
+</head>
+<body>
+<!-- 座標変換を行う前にキャンバスの状態を保存しておくことは、よいアイデアです。ほとんどの場合、元の状態に戻すためには逆の座標変換を行うよりも restore メソッドを呼び出すほうが簡単です。また、ループ内で座標変換を行っているときにキャンバスの状態の保存や復元を行わなければ、キャンバスの端の外側に描画することになり、描いたものの一部を失ってしまうかもしれません。 -->
+    <canvas id="test">canvas</canvas>
+    <script>
+        const canvas = document.getElementById("test");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "rgb(255, 255, 255)";
+        ctx.fillRect(0,0,20,20)
+        ctx.fillRect(50,0,20,20)
+        ctx.fillRect(50,0,20,20)
+        ctx.fillRect(100,0,20,20)
+    </script>
+    
+</body>
+</html>

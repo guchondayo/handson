@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <button>0<span class="one">ホバーしています</span></button>
+      <button>45<span class="two">ホバーしています</span></button>
+      <button>90<span class="three">ホバーしています</span></button>
+      <button>135<span class="four">ホバーしています</span></button>
+      <button>180<span class="five">ホバーしています</span></button>
+    </div>
+    <div>
+      <button>0<span class="six">ホバーしています</span></button>
+      <button>-45<span class="seven">ホバーしています</span></button>
+      <button>-90<span class="eight">ホバーしています</span></button>
+      <button>-135<span class="none">ホバーしています</span></button>
+      <button>-180<span class="ten">ホバーしています</span></button>
+    </div>
+    <style>
+      div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      button {
+        position: relative;
+        padding: 10px 20px;
+        background-color: aqua;
+      }
+
+      span {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: yellow;
+        width: 100%;
+        height: 100%;
+        transform-origin: top;
+        transform-style: preserve-3d;
+        perspective: 300px;
+      }
+      .one {
+        transform: rotateX(0deg);
+      }
+      .two {
+        transform: rotateX(45deg);
+      }
+      .three {
+        transform: rotateX(90deg);
+      }
+      .four {
+        transform: rotateX(135deg);
+      }
+      .five {
+        transform: rotateX(180deg);
+      }
+      .six {
+        transform: rotateX(0deg);
+      }
+      .seven {
+        transform: rotateX(-45deg);
+      }
+      .eignt {
+        transform: rotateX(-90deg);
+      }
+      .nine {
+        transform: rotateX(-135deg);
+      }
+      .ten {
+        transform: rotateX(-180deg);
+      }
+
+      /* span {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: yellow;
+        width: 100%;
+        height: 100%;
+        transform: rotateX(90deg);
+        transform-origin: top;
+        transform-style: preserve-3d;
+        perspective: 300px;
+      } */
+      /* button:hover span {
+        background-color: blue;
+        display: inline-block;
+      } */
+    </style>
+  </body>
+</html>

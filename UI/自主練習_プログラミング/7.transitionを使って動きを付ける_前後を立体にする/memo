@@ -1,0 +1,6 @@
+★前後に立体にする
+あなたが提供したHTMLとCSSコードは、要素を3Dにするための設定が不足しています。transformプロパティにtranslateZ(10px)を適用したところで、div要素は3Dスペースに配置されているわけではないため、効果がありません。
+要素を3Dにするには、以下の手順が必要です:
+親要素（div）にperspectiveプロパティを適用し、3D視点を定義します。
+子要素（span）にrotateXやrotateY、rotateZなどのtransformプロパティを使用して回転させることで、3D効果を作り出します。
+以下は修正されたコードです: html Copy code

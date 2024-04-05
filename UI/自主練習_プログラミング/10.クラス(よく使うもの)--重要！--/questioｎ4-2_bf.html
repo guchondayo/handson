@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="firstpage"></div>
+    <div class="secondpage"></div>
+  </body>
+  <script>
+    const question1 = document.querySelector(".firstpage");
+    const question2 = document.querySelector(".secondpage");
+    // console.log(
+    //   "WINDOWそのものにイベントを作ることもできるわけ",
+    //   window.addEventListener
+    // );
+    console.log(pageYOffset);
+    window.addEventListener("scroll", () => {
+      console.log(pageYOffset);
+      console.log("これが要素の高さ", question1.scrollHeight);
+      console.log("これが今いる座標のの高さ", window.pageYOffset);
+      if (window.pageYOffset > question1.scrollHeight) {
+        question2.classList.add("add");
+      } else {
+        question2.classList.remove("add");
+      }
+    });
+  </script>
+  <style>
+    div {
+      width: 100%;
+      height: 100vh;
+    }
+    .firstpage {
+      background-color: yellow;
+    }
+    .secondpage {
+      background-color: pink;
+    }
+
+    .add {
+      background-color: aqua;
+    }
+  </style>
+</html>

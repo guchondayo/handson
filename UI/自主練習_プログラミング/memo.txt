@@ -1,0 +1,10 @@
+★大事なこと
+1.htmlから先に作成することが大事
+
+
+★参考
+画像をタッチしてスライドさせる
+https://noveblo.com/javascript-css-change-images/
+
+
+

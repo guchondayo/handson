@@ -1,0 +1,4 @@
+★スライダーに関するめも
+1.本当に単純に画像をblockとnoneで切り替える
+2.transitionで切り替える
+3.setintervalで間隔をしっかりとる

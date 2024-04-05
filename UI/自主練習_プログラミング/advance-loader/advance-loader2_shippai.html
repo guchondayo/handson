@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="outside round">
+        <div class="inside round"></div>
+      </div>
+    </div>
+    <style>
+      .container {
+        text-align: center;
+      }
+      .outside {
+        width: 200px;
+        height: 200px;
+        background-color: gray;
+        position: relative;
+        animation: rounder 5s infinite;
+      }
+
+      .inside {
+        width: 100px;
+        height: 100px;
+        background-color: black;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: a 5s infinite;
+      }
+      .round {
+        border-radius: 50%;
+      }
+      @keyframes rounder {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(0);
+          opacity: 0;
+        }
+      }
+      /* transformで指定したときにハマったこと */
+      /* ⇒outssideとinsideで親子関係を作った時の弊害 */
+      /* 親のアニメーションが動いたら、子のアニメーションもそれに付随して影響が出る */
+      /* ⇒親子関係を外して新しく親を作り、今までの親子は兄弟に並べるーそれぞれ独立することができました */
+      /* animationが始まったら、他クラスのtransformが消えた件 */
+      /* ⇒animation事態transform-translateを入れてあげて解決 */
+      /* でもうまくいかない */
+      /* ⇒animationは、左の価から読むらしい！だから translateよりもscale(1)が先に動いてしまってたｍｍｍ*/
+      /* https://naruweb.com/coding/transform/ */
+    </style>
+  </body>
+</html>

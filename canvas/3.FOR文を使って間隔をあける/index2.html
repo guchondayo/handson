@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #test{
+            width: 100%;
+            height: 100vh;
+            background-color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="test">canvas</canvas>
+    <script>
+        var ctx = document.getElementById("test").getContext("2d");
+        for (var i = 0; i < 6; i++) {
+            console.log("aaaa",i)
+            for (var j = 0; j < 6; j++) {
+            ctx.fillStyle ="rgb(" + Math.floor(255 - 42.5 * i) + ", " + Math.floor(255 - 42.5 * j) + ", 0)";
+            console.log(ctx.fillStyle)
+            ctx.fillRect(j * 25, i * 25, 25, 25);
+            }
+        }
+    </script>
+</body>
+</html>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

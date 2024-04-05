@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #test{
+            width: 100%;
+            height: 100vh;
+            background-color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="test">canvas</canvas>
+    <script>
+
+        const canvas = document.getElementById("test");
+        const ctx = canvas.getContext("2d");
+// 黄色い背景を描画
+ctx.beginPath();
+ctx.fillStyle = "#ff6";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+// 青い三角形を描画
+ctx.beginPath();
+ctx.fillStyle = "blue";
+ctx.moveTo(20, 20);
+ctx.lineTo(180, 20);
+ctx.lineTo(130, 130);
+ctx.closePath();
+ctx.fill();
+
+// キャンバスの一部を消去
+ctx.clearRect(10, 10, 120, 100);
+    </script>
+    
+</body>
+</html>

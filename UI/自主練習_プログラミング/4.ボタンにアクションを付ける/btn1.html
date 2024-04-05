@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="hover">ホバー</button>
+    <button id="click" class="noClick">クリック</button>
+  </body>
+  <script></script>
+  <style>
+    #hover {
+      background-color: black;
+      color: aliceblue;
+      border-color: black;
+    }
+    #hover:hover {
+      background-color: white;
+      color: black;
+      border-color: white;
+    }
+    .noClick {
+      background-color: red;
+      padding: 10px 20px;
+    }
+    .isClick {
+      background-color: blue;
+      color: white;
+    }
+  </style>
+  <script>
+    const btn = document.querySelector("#click");
+    let count = 0;
+    btn.addEventListener("click", () => {
+      if (count === 0) {
+        btn.classList.add("isClick");
+        count = 1;
+      } else {
+        btn.classList.remove("isClick");
+        count = 0;
+      }
+      //   btn.classList.toggle("isClick");
+    });
+  </script>
+</html>

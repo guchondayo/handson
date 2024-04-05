@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button class="question1">ボタンが動いたら合格</button>
+    <p class="color">色が変わる</p>
+  </body>
+  <script>
+    const question1 = document.querySelector(".question1");
+    const color = document.querySelector(".color");
+    let isClass = true;
+    question1.addEventListener("click", () => {
+      if (isClass) {
+        color.classList.add("add");
+        isClass = false;
+      } else {
+        color.classList.remove("add");
+        isClass = true;
+      }
+    });
+  </script>
+  <style>
+    .add {
+      background-color: aqua;
+    }
+  </style>
+</html>

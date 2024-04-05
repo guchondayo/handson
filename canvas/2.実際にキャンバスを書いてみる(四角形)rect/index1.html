@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #test{
+            width: 100%;
+            height: 100vh;
+            background-color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="test">canvas</canvas>
+    <script>
+
+        const canvas = document.getElementById("test");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "rgb(255, 255, 255)";
+        ctx.fillRect(10,10,10,10); // 最初の四角形
+        ctx.fillStyle = "rgb(200, 0, 0)";
+        ctx.fillRect(15,15,20,20); // 2つ目の四角形
+    </script>
+</body>
+</html>

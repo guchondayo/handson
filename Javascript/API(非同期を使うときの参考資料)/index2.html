@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function heavyProcessing() {
+        // 重い処理
+        console.log("osoi");
+
+        document
+          .getElementById("button")
+          .addEventListener("click", function () {
+            console.log("Button clicked!");
+            heavyProcessing();
+            console.log("Processing complete!"); // この行はheavyProcessingが完了するまで実行されない
+          });
+      }
+    </script>
+  </body>
+</html>

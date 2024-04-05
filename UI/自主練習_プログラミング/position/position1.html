@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 目的は、真ん中のポジションがabsoluteになることで
+    ボックスがなかったことになるので後ろの要素がそのまま
+    上に差し込まれることを確認 -->
+    <div class="container">
+      <div class="first box">１番目</div>
+      <div class="second box">２番目</div>
+      <div class="third box">３番目</div>
+    </div>
+  </body>
+  <style>
+    .container {
+      position: relative;
+    }
+    .box {
+      height: 100px;
+      width: 100px;
+    }
+    .first {
+      background-color: aqua;
+    }
+    .second {
+      background-color: blueviolet;
+      position: absolute;
+    }
+    .third {
+      background-color: black;
+    }
+  </style>
+</html>

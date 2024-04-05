@@ -1,0 +1,10 @@
+文字を入れるのも一緒
+1.フォントのサイズと種類を入れる
+ctx.font = "16px serif";
+2.文字XY
+ctx.fillText("Hello world", canvas.width / 2 -8, canvas.height /2 -8);
+
+大事なこと
+1.fillとstroke
+【MDN】
+https://developer.mozilla.org/ja/docs/Web/API/Canvas_API/Tutorial/Drawing_text

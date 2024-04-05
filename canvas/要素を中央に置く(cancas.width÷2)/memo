@@ -1,0 +1,17 @@
+【要素を中央に置く方法】
+1.真ん中のX(÷2)
+2.真ん中のy(÷2)
+3．長さの分ずれるので、高さ(÷2)をマイナスする
+4．長さの分ずれるので、高さ(÷2)をマイナスする
+
+
+
+; var canvas = document.getElementById('myCanvas');
+; var context = canvas.getContext('2d');
+
+; // Canvasの中央座標を計算
+; var centerX = canvas.width / 2;
+; var centerY = canvas.height / 2;
+
+; // 要素を描画
+; context.fillRect(centerX - 50, centerY - 50, 100, 100); // 例として長方形を描画

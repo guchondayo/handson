@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="square"></div>
+    </div>
+  </body>
+  <style>
+    .container {
+      text-align: center;
+      /* リアル感を出す */
+    }
+    .square {
+      display: inline-block;
+      background-color: aqua;
+      width: 100px;
+      height: 100px;
+      animation: rotating 1.2s infinite;
+    }
+    /* リアル感を出す */
+    @keyframes rotating {
+      0% {
+        transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+      }
+      50% {
+        transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
+      }
+      100% {
+        transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
+      }
+    }
+  </style>
+</html>

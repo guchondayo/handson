@@ -1,0 +1,13 @@
+
+★三角形や５角形などを書いてみる
+1.beginPath()
+2.moveTo
+3.lineTo
+4.fill
+
+★直線を書いてみる
+1.beginPath()
+2.moveTo
+3.lineTo
+4.stroke
+★moveToとlineToの違い

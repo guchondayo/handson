@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <main>
+      <div class="elem">
+        <span>a</span>
+        <span>r</span>
+        <span>i</span>
+        <span>g</span>
+        <span>a</span>
+        <span>t</span>
+        <span>o</span>
+      </div>
+      <button
+        onclick="document.querySelector('.elem').classList.toggle('anime')"
+      >
+        押せ！
+      </button>
+    </main>
+    <style>
+      main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: aqua;
+      }
+      span {
+        display: inline-block;
+        font-size: 16px;
+      }
+      .anime span {
+        animation: action 1s infinite;
+      }
+      @keyframes action {
+        0% {
+          transform: translate(0, 10px) skew(90deg);
+        }
+        50% {
+          transform: translate(0, -10px) skew(-90deg);
+        }
+        100% {
+          transform: translate none;
+        }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+acceptRequest(req, res) はどこで呼ばれている

@@ -1,0 +1,31 @@
+★Transformはこれしかねぇぜ！
+https://developer.mozilla.org/ja/docs/Web/CSS/transform-function
+あと
+rotateXと3dは違うから気をつけな
+→3ｄはうくから
+
+★作成する手順
+    1.ボタンを作成する
+    2.ボタンと同じサイズの要素を作成する
+    3.トリガーが発動したら、ボタンを重ねる動きを作成する
+★コツ
+positionを使うときの選定基準
+1.要素の位置(座標)を細かく指定したいとき
+2.要素を重ねたいとき
+★重ね方
+1.動くときに同じ動きをさせたいときは親子関係にする
+⇒親:positionr:relative;
+⇒子:position:absolute;
+1.それぞれ独立した動きをさせたいときは、親兄弟関係にする
+⇒親：親を作ってpositionr:relative;
+⇒子(自分):position:absolute;top0left0
+⇒子:(弟)position:absolute;
+＊こうすることによりみんな同じ位置からスタートする
+
+
+
+
+★問題はz-index
+https://qiita.com/onishi_820/items/a111fe437d07a7a7681d
+
+ここは複雑なんで後で確認

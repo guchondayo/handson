@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Script Blocking</title>
+  </head>
+  <body>
+    <h1>Hello, World!</h1>
+
+    <script>
+      // 重い処理をシミュレートするためにループを追加
+      for (let i = 0; i < 100000000; i++) {
+        // 重い処理
+        console.log("osoi");
+      }
+
+      console.log("Heavy processing complete!");
+    </script>
+
+    <p>This is some content below the script.</p>
+  </body>
+</html>

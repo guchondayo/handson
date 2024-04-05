@@ -1,0 +1,38 @@
+    1.Imageクラスで読み込む
+    2.dataで埋め込む
+    3.動画を埋め込む
+
+1.画像はImageクラスを生成
+1-1.イメージクラスの生成
+1-2.イメージクラスにはsrcがあるので、そのプロパティにURLを代入
+2.大きさを生成する
+1-1.addEvent-loadを使う
+1-2.addEvent-loadの中にdrawImageを実行すること
+⇒x,y,縦,横
+
+【画像の上に線を読み込むとき】
+＊画像は時間がかかる！！！！！！
+⇒だからこそ、onloadの後に図形などほかの動画を書くことが大事なのである
+
+【画像を拡大、縮小するとき】
+// 1.ソースを指定してから、イベントを発火
+// 2.その中に大きさを書く
+// 3.forで順番を指定していくと拡大していく
+
+
+【画像の切り取り】
+drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+
+
+
+
+
+【画像のサイズ変更の動作の制御】
+先に述べたとおり、サイズを変更した画像は変更処理の影響で、不鮮明またはブロック状のアーティファクトが発生します。描画コンテキスト内で画像のサイズを変更する際に使用する画像スムージングアルゴリズムを制御するために、描画コンテキストの imageSmoothingEnabled プロパティを使用できます。既定ではこれが true であり、画像のサイズを変更する際にスムージングを行います。以下のように、この機能は無効化できます。
+
+JS
+Copy to Clipboard
+ctx.mozImageSmoothingEnabled = false;
+ctx.webkitImageSmoothingEnabled = false;
+ctx.msImageSmoothingEnabled = false;
+ctx.imageSmoothingEnabled = false;

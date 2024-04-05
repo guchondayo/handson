@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <!-- 1.ホバーしたときに文字が変わるので、変更前と変更後にそれぞれタグを作成 -->
+  <!-- 2.見えないところから見えるようにする/見えるところから見えないようにする -->
+  <!-- ↑イメージとして上空からたての画用紙を見る⇒真横からみる方法＝＞だから９０度なんです -->
+  <!-- 3.簡単に考えましょう！最初に表示させるキューブと最初に表示させないキューブを作れ -->
+  <!-- 4.%を操る方法を考えよう -->
+  <!-- 5.beforeとおおもとは子供になる -->
+  <!-- 6.そのクラス分類は適切か？みんなに迷惑がかかるぞ？ -->
+  　<!-- 7.中に文字などの要素があるときは疑似要素ではなく実際の要素を使ってみよう -->
+  <body>
+    <div id="container">
+      <div class="try">
+        <h2>演習</h2>
+        <p>try.scssを編集しよう</p>
+        <a class="btn cubic"
+          ><span class="hovering">Now, Hovering</span
+          ><span class="default">Button</span></a
+        >
+      </div>
+    </div>
+  </body>
+  <style>
+    #container {
+      text-align: center;
+    }
+    .try .btn {
+      display: inline-block;
+      padding: 20px 40px;
+      width: 100px;
+      height: 10px;
+      transform-style: preserve-3d;
+      perspective: 300px;
+    }
+    .try .btn.cubic {
+      position: relative;
+      cursor: pointer;
+    }
+    .btn.cubic span {
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      line-height: 70px;
+      transform-origin: center center -25px;
+      transition: all 0.3s;
+    }
+    .try .btn.cubic .default {
+      background-color: red;
+      color: black;
+      transform: none;
+    }
+    .try .btn.cubic:hover .default {
+      transform: rotateX(-90deg);
+    }
+
+    .try .btn.cubic .hovering {
+      background-color: yellow;
+      transform: rotateX(90deg);
+    }
+    .try .btn.cubic:hover .hovering {
+      transform: none;
+    }
+  </style>
+</html>

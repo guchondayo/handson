@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="square"></div>
+    </div>
+  </body>
+  <style>
+    /* 1.動いていない完成図を作る */
+    .container {
+      text-align: center;
+    }
+    .square {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      background-color: aqua;
+      animation: test 1s infinite;
+      animation-direction: alternate;
+    }
+    @keyframes test {
+      0% {
+        scale: 0;
+      }
+      100% {
+        scale: 1;
+      }
+    }
+    /* 1.動いていない完成図を作る */
+  </style>
+</html>

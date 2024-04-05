@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container"></div>
+    <style>
+      /* 雪を降らせる方法 */
+      /* 1.フィールド全体にかかわるので、100vhと100%を付けてあげる */
+      /* 2.●を作ってあげる */
+      /* 3.タグとクラスを作成してあげる. */
+      /* コツ */
+      /* ⇒今回は0から複数の要素を作るので、タグはjavascriptで作らないとだめ */
+      /* ＊文字付指定の要素⇒タグを作っちゃう */
+      /* ＊なんも入れない⇒疑似要素 */
+      /* ＊不特定多数の要素⇒JS */
+
+      /* ここから大事なこと */
+      /* 1.forで要素を回す＝同時に複数 */
+      /* 2.transitionで動かす⇒表示させてから動かす(JSでも動かす方法があるよ) */
+      /* 3.SETTIMEOUTを使うとJSを実行するタイミングを自分で制御する */
+      .container {
+        width: 100%;
+        height: 100vh;
+        background-color: black;
+        position: relative;
+        overflow: hidden;
+      }
+      .ball {
+        display: inline-block;
+        background-color: white;
+        position: absolute;
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+
+        animation: 10s snow-fall infinite;
+      }
+      @keyframes snow-fall {
+        0% {
+          transform: translatey(0);
+        }
+        100% {
+          transform: translatey(100vh);
+        }
+      }
+    </style>
+    <script>
+      let container = document.querySelector(".container");
+      for (let i = 0; i <= 100; i++) {
+        let ball = document.createElement("span");
+        container.appendChild(ball);
+        ball.classList.add("ball");
+        ball.style.top = `${Math.random() * 1000}px`;
+        ball.style.left = `${Math.random() * 2000}px`;
+        let randomNum = Math.random() * 10;
+        ball.style.width = `${randomNum}px`;
+        ball.style.height = `${randomNum}px`;
+      }
+    </script>
+  </body>
+</html>

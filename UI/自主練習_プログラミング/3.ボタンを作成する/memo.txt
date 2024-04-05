@@ -1,0 +1,14 @@
+★ボタンを作成する際とどうなるか
+1.button要素
+    ⇒padding
+    ⇒background-colorまたはborderで枠を決める
+2.a要素
+    ⇒padding
+    ⇒background-colorまたはborderで枠を決める
+
+★aとbuttonの使い分け
+a要素⇒タグにリンクを張り付けて遷移
+button要素⇒javascriptを使って遷移したいとき
+★参考
+
+https://webparts.cman.jp/button/a/

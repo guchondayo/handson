@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let a = 1;
+        function roop() {
+            if(a < 10){
+                console.log("1コメが終わる")
+                aidanihairusyori(roop); // アニメーションを再開
+            }
+        }
+        function aidanihairusyori(callback){
+            console.log("途中で挟む");
+            callback(); // コールバック関数を呼び出す
+        }
+        roop(); // 最初に roop 関数を呼び出す
+    </script>
+</body>
+</html>

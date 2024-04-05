@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      /* 今の状態は、前提として */
+      /* 1.メニュー */
+      /* 2.ボタンを静的には動かせている */
+      /* ⇒次にすることは */
+      /* どう分類するか？
+      1.ボタンON
+      2.ボタンOFF
+      3.メニューON
+      4.メニューOFF */
+      /* ⇒この4つになります。 */
+      /* JSでできることは
+      1.条件⇒クラスの切り変え(classlistaddremove)
+      2.ONとOFFの切り替え
+      ⇒CSSで条件が何とかなれば楽なのである */
+      /* **大事** */
+      /* classlistaddremove＋ifを使うのもいいけど
+      element.classList.toggle(className);つかったらより楽よ */
+      main {
+        position: relative;
+      }
+
+      /* ボタン用 */
+      #btn-area button {
+        display: block;
+        padding: 10px 20px;
+        background-color: honeydew;
+        width: 100%;
+        height: 10%;
+      }
+      /* メニューボタンについて */
+      .show-btn {
+        position: absolute;
+        top: 0;
+        left: 150px;
+        background-color: honeydew;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        cursor: pointer;
+      }
+
+      .show-btn span {
+        display: inline-block;
+        width: 40px;
+        height: 5px;
+        background-color: black;
+        margin: 2.5px;
+        border-radius: 20%;
+        transition: transform 0.5s; /* 追加 */
+      }
+      /* ボタン後 */
+      /* ＊positionを入れ子の入れ子にするときは、両方position absoluteにしておくとよい */
+      .hide-btn {
+        background-color: honeydew;
+        position: absolute;
+        top: 0;
+        left: 150px;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+      }
+
+      .hide-btn span {
+        display: inline-block;
+        width: 40px;
+        height: 5px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: black;
+        border-radius: 20%;
+      }
+
+      /* クリック時のアニメーション */
+      .hide-btn > span:first-child {
+        transform: translate(-50%, -50%) rotate(135deg);
+        transition: 1s;
+      }
+
+      .hide-btn > span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .hide-btn > span:last-child {
+        transform: translate(-50%, -50%) rotate(-135deg);
+        transition: 1s;
+      }
+
+      /* ******メニューエリアのスタイル**************** */
+      .hide-menu {
+        transition: 1s;
+        background-color: yellow;
+        transform: translateX(-100%);
+        width: 200px;
+        height: 1000px;
+      }
+
+      .show-menu {
+        transition: 1s;
+        background-color: pink;
+        transform: none;
+        width: 200px;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div id="btn-area" class="hide-menu">
+        <button>ボタン1</button>
+        <button>ボタン2</button>
+        <button>ボタン3</button>
+      </div>
+      <button class="show-btn" id="onClick">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </main>
+    <script>
+      let onClick = document.getElementById("onClick");
+      let body = document.getElementById("btn-area");
+      let isOpen = true;
+      onClick.addEventListener("click", () => {
+        if (isOpen) {
+          body.classList.add("show-menu");
+          body.classList.remove("hide-menu");
+          onClick.classList.add("hide-btn");
+          onClick.classList.remove("show-btn");
+          isOpen = false;
+        } else {
+          isOpen = true;
+          body.classList.add("hide-menu");
+          body.classList.remove("show-menu");
+          onClick.classList.add("show-btn");
+          onClick.classList.remove("hide-btn");
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- ボタンの間隔がつかめない -->
+    <div>
+      <span>ボタン1</span>
+      <span>ボタン2</span>
+      <span>ボタン3</span>
+      <span>ボタン4</span>
+    </div>
+    <!-- ボタンがきれいに -->
+    <div class="inline-block">
+      <span>ボタン1</span>
+      <span>ボタン2</span>
+      <span>ボタン3</span>
+      <span>ボタン4</span>
+    </div>
+
+    <div>
+      <div>ボタン1</div>
+      <div>ボタン2</div>
+      <div>ボタン3</div>
+      <div>ボタン4</div>
+    </div>
+    <!-- ボタンがきれいに -->
+    <div class="inline-block">
+      <span>ボタン1</span>
+      <span>ボタン2</span>
+      <span>ボタン3</span>
+      <span>ボタン4</span>
+    </div>
+    <style>
+      span {
+        background-color: aqua;
+        padding: 20px 40px;
+        margin: 10px;
+      }
+      div div {
+        background-color: aqua;
+        padding: 20px 40px;
+        margin: 10px;
+      }
+      /* ここを付けたり外してみて */
+      .inline-block span {
+        display: inline-block;
+      }
+    </style>
+  </body>
+</html>

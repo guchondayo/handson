@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Opening Animation</title>
+    <style>
+      canvas {
+        display: block;
+        margin: auto;
+        /* width: 100%;
+        height: 100vh; */
+        /* 以上でもOKだよ！ */
+        background-color: #222;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="openingCanvas"></canvas>
+
+    <script>
+      // キャンバスとコンテキストの取得
+      const canvas = document.getElementById("openingCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // キャンバスのサイズを設定
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      // アニメーションのパラメータ
+      const animationDuration = 3000; // アニメーションの時間（ミリ秒）
+      const startRadius = 10; // 初期の円の半径
+      const endRadius = Math.min(canvas.width, canvas.height) / 2; // 最終的な円の半径
+      const fadeInDuration = 1000; // フェードインの時間（ミリ秒）
+
+      // アニメーションの開始時刻
+      const startTime = Date.now();
+
+      function animate() {
+        // 現在の経過時間を計算
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - startTime;
+
+        // アニメーションが終了したら終了
+        if (elapsedTime > animationDuration) {
+          return;
+        }
+
+        // キャンバスをクリア
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // アニメーション進捗の計算（0から1の範囲）
+        const progress = Math.min(1, elapsedTime / fadeInDuration);
+
+        // 円の半径を計算
+        const currentRadius =
+          startRadius + progress * (endRadius - startRadius);
+
+        // 円を描画
+        ctx.beginPath();
+        ctx.arc(
+          canvas.width / 2,
+          canvas.height / 2,
+          currentRadius,
+          0,
+          2 * Math.PI
+        );
+        ctx.fillStyle = `rgba(255, 255, 255, ${1 - progress})`; // フェードアウト
+        ctx.fill();
+
+        // 次のフレームの描画を要求
+        requestAnimationFrame(animate);
+      }
+
+      // アニメーションを開始
+      animate();
+    </script>
+  </body>
+</html>

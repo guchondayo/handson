@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <span class="ball"></span>
+    </div>
+    <style>
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .ball {
+        display: inline-block;
+        position: absolute;
+        border-radius: 50%;
+        animation: test 1s infinite;
+      }
+      @keyframes test {
+        0% {
+          scale: 0;
+        }
+        50% {
+          scale: 1;
+        }
+        100% {
+          scale: 0;
+        }
+      }
+    </style>
+    <script>
+      let container = document.querySelector(".container");
+      setInterval(() => {
+        let ball = document.createElement("span");
+        container.appendChild(ball);
+        const num = Math.floor(Math.random() * 200) + 1;
+        ball.classList.add("ball");
+        ball.style.width = `${num}px`;
+        ball.style.height = `${num}px`;
+        var ue = Math.floor(Math.random() * 100) + 1;
+        var left = Math.floor(Math.random() * 100) + 1;
+        ball.style.top = `${ue}%`;
+        ball.style.left = `${left}%`;
+        var random = Math.random() * 100;
+        var randomR = Math.floor(Math.random() * 256);
+        var randomG = Math.floor(Math.random() * 256);
+        var randomB = Math.floor(Math.random() * 256);
+        var randomAlpha = 0.5;
+        ball.style.backgroundColor = `rgba(${randomR}, ${randomG}, ${randomB}, ${randomAlpha})`;
+        setInterval(() => {
+          ball.remove();
+        }, "1000");
+      }, "10");
+    </script>
+  </body>
+</html>

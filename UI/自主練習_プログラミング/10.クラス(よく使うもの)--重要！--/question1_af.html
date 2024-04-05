@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="question1">このテキストがJavascriptに表示されたら合格</div>
+  </body>
+  <script>
+    class getElement {
+      constructor(ClassNameParams) {
+        this.className = ClassNameParams;
+        this.qs = document.querySelector(this.className);
+        this.showInnerTEXT = this.qs.innerHTML;
+        let classInside = "aaaaa";
+      }
+    }
+    const getElementByClass = new getElement(".question1");
+    console.log("DOMが表示されるはず", getElementByClass.qs);
+    console.log("DOMが表示されるはず", getElementByClass.showInnerTEXT);
+    console.log("DOMが表示されるはず", getElementByClass.qs.innerHTML);
+  </script>
+</html>

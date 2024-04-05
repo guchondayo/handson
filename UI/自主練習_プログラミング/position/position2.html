@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 目的は、親にrelativeを入れたら親からOOpxを入れた値になるし-->
+    <!-- いれなかったら、先頭から00px移動しますよっていう意味になる-->
+    <div class="box"></div>
+    <div class="container">
+      <div class="first box">１番目</div>
+      <div class="second box">２番目</div>
+      <div class="third box">３番目</div>
+    </div>
+  </body>
+  <style>
+    .container {
+      /* ↓入れた場合と入れなかった場合を確かめてみな */
+      position: relative;
+      background-color: bisque;
+      height: 200px;
+      width: 200px;
+    }
+    .box {
+      height: 100px;
+      width: 100px;
+    }
+    .first {
+      background-color: aqua;
+      z-index: 0;
+    }
+    .second {
+      background-color: blueviolet;
+      position: absolute;
+      top: 100px;
+    }
+    .third {
+      background-color: black;
+    }
+  </style>
+</html>

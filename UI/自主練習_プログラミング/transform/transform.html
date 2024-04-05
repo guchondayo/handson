@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- <label><input id="checkbox">ボックス</label>
+
+    <button id="btn">ボタン</button> -->
+    <div class="rect"></div>
+    <div class="rotate"></div>
+    <div class="rotateOutside"></div>
+    <div class="skew"></div>
+    <div class="scale"></div>
+    <style>
+      .rect {
+        width: 100px;
+        height: 100px;
+        background-color: blueviolet;
+        transform: translate(100%, 50%);
+      }
+      .rotate {
+        width: 100px;
+        height: 100px;
+        transform: rotate(50deg);
+        background-color: yellow;
+      }
+      .rotateOutside {
+        width: 100px;
+        height: 100px;
+        transform: rotate(50deg);
+        transform-origin: -20px, -20px;
+        background-color: blue;
+      }
+      .skew {
+        width: 100px;
+        height: 100px;
+        background-color: orangered;
+        transform: rotate(-30deg, -40deg);
+      }
+      .scale {
+        width: 100px;
+        height: 100px;
+        transform: rotate(50deg);
+      }
+      /* #btn:checkbox { */
+      /* transform: translate(200px, 50px); */
+      /* } */
+      /* 基本的にはアニメションとかhoverなどの時間やトリガーと一緒に使うみたい */
+      /* 意外とボタンではCSSないんだね */
+      /* そうか、ボタンやチェックボックスと動かす要素が違うときってJS使わないと難しいんだね */
+    </style>
+  </body>
+</html>

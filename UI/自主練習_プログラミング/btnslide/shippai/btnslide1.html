@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <button class="btn">
+        <div class="box"></div>
+        <span>button</span>
+      </button>
+    </div>
+  </body>
+  <style>
+    /* 手順 */
+    /* 1.ボタンと同じ大きさの要素を重ねる */
+    /* 2.上にある要素をtransformで左に動かしす */
+    /* 3.2の要素を消す */
+    /* 4.ホバーしたら、transformを消して動かす：正しい書き方『.btn:hover .box』 */
+    /* 5.overflow: hidden;の中だけで表示されるという意味 */
+    /* わからなかった理由 */
+    /* 1.移動させるんだったらCSSだけで行けるんじゃね？  */
+    /* ⇒移動させるCSSとタグは別にしておかないと、動かしてはいけないものまで動かしてしまう */
+    /* 2.positionを使わなくてもいいんじゃね？  */
+    /* ⇒positionは */
+    /* 1.要素の場所を指定する、、だけでなく */
+    /* 2.要素を他のタグに邪魔されずに重ねることができる★★ここ大事 */
+    /* 3.position、absoluteを入れたのに、ちゃんと動かない  */
+    /* ⇒top 0 left 0を入れ忘れた  */
+    /* 4.気づいてしまった！トリガーになるクラスと実際に動かすクラスが違うじゃないか★★ここ大事！！  */
+    /* クラスの指定にトリガーになるクラスと実際に動かすクラスを一つにまとめて処理を描けばいい『.btn:hover .box』  */
+
+    .container {
+      text-align: center;
+    }
+    .btn {
+      background-color: aliceblue;
+      padding: 10px 20px;
+      border: 3px solid black; /* 修正: borderの指定が誤っていた */
+      cursor: pointer;
+      position: relative;
+    }
+
+    .box:hover {
+      transition: 3s;
+      transform: translateX(0);
+    }
+    .box {
+      position: absolute;
+      background-color: blue;
+      transform: translate(-100%, 0);
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</html>

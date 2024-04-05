@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- 1.ボタンそのものの配置を決める -->
+    <!-- textalinecenterにすることでコンテナの中でボタンが真ん中に来る
+    つまりボタンはインライン要素であることが判明『画像1』 -->
+
+    <div id="container">
+      <button class="btn">button</button>
+    </div>
+  </body>
+  <!-- 2.ボタンの色付けはボタンタグに装飾をすれば実装できる(色も枠組みも自由に指定していいよ) -->
+  <!-- 
+　1.背景
+  2.枠線
+  3.色
+  4.余白⇒padding -->
+  <style>
+    #container {
+      text-align: center;
+    }
+    .btn {
+      background-color: white;
+      color: black;
+      border: 1px solid black;
+      padding: 10px 40px;
+      /* カーソル当てると『手』になる */
+      cursor: pointer;
+      margin: 40px 0;
+      font-weight: 600;
+      /* transition: 0.3s ease 3s; */
+    }
+    .btn:hover {
+      background-color: black;
+      color: white;
+      /* 条件に移り変わりの時間を入れてあげると、徐々にできる */
+      transition: 3s;
+    }
+    /* 1.transitionを設定する⇒初期設定は適用されなくなる＝今設定しているものがないものになる */
+  </style>
+</html>

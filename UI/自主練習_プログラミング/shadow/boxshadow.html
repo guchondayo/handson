@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="box">
+      <button class="text">button</button>
+    </div>
+  </body>
+  <style>
+    .box {
+      text-align: center;
+    }
+    .text {
+      padding: 10px 20px;
+      background-color: black;
+      color: aliceblue;
+      cursor: pointer;
+    }
+    .text:hover {
+      box-shadow: 5px 5px 5px black; /* 忘れがち！！！！！！水平方向、垂直方向、ぼかし半径、色の順に指定 */
+      transition: box-shadow 3s ease; /* transitionを明示的に指定する */
+      /* 妥協は許さない、boxshadow */
+    }
+  </style>
+</html>

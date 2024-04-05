@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="button1">これを押すと</button>
+    <button id="button2">後ろが動かない</button>
+    <script>
+      function timeConsumingOperation() {
+        // 何らかの重い処理をシミュレート
+        for (let i = 0; i < 1000000000; i++) {
+          // 重い処理
+          console.log("重い処理");
+        }
+        console.log("Operation complete!");
+      }
+
+      document.getElementById("button1").addEventListener("click", function () {
+        console.log("Button 1 clicked!");
+        timeConsumingOperation();
+      });
+
+      document.getElementById("button2").addEventListener("click", function () {
+        console.log("Button 2 clicked!");
+      });
+    </script>
+  </body>
+</html>

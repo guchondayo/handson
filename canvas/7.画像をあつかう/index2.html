@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #test{
+            width: 100%;
+            height: 100vh;
+            background-color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <!-- 動画を使うときは
+    1.Imageクラスで読み込む
+    2.dataで埋め込む
+    3.動画を埋め込む -->
+    <canvas id="test">canvas</canvas>
+    <script>
+        const canvas = document.getElementById("test");
+        const ctx = canvas.getContext("2d");
+        var img = new Image()
+        img.addEventListener('load',(()=>{
+            console.log("aaaa")
+            ctx.drawImage(img,50,65,100,100)
+        }))
+        img.src = "./test.png"
+
+      
+
+    </script>
+    
+</body>
+</html>

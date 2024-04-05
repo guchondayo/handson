@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <span>moto</span>
+    <span class="first">rotate</span>
+
+    <style>
+      span {
+        display: inline-block;
+        background-color: aqua;
+        padding: 20px 40px;
+      }
+      .first {
+        position: absolute;
+        background-color: yellow;
+        transform: rotateX(45deg);
+      }
+      span:hover.first {
+        background-color: blue;
+        transform: rotateX(0deg);
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+【React】イベントハンドラについて
+
+onClick={handleClick} の末尾に括弧がないことに注意してください！ そこでイベントハンドラ関数を呼び出すわけではありません。渡すだけです。ユーザがボタンをクリックしたときに、React がイベントハンドラを呼び出します。
+1.onClick=に関数を渡すと実行されるよ
+2.ここで大事なのは、ボタンは関数で押すのはユーザーだから()入らないよ
+onClick={btnAction}
+export default function Button() {
+    let btnName = "ボタンを押した";
+    
+    function btnAction() {
+        window.alert("aaaaaaaaaaaaaaaa");
+    }
+
+    return (
+        <button onClick={btnAction}>{btnName}</button>
+    );
+}
+
+

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="text" class="question1" />
+    <p class="color">色が変わる</p>
+  </body>
+  <script>
+    const question1 = document.querySelector(".question1");
+    const color = document.querySelector(".color");
+    isClass = 100;
+    question1.addEventListener("keyup", () => {
+      if (question1.value > 100) {
+        color.classList.add("add");
+      } else {
+        color.classList.remove("add");
+      }
+    });
+  </script>
+  <style>
+    .add {
+      background-color: aqua;
+    }
+  </style>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #test{
+            width: 100%;
+            height: 100vh;
+            background-color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="test">canvas</canvas>
+    <script>
+        // 1は横に拡大
+        // 4はたてに拡大
+        const canvas = document.getElementById("test");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "rgb(255, 255, 255)";
+        ctx.fillRect(0, 0, 100, 100);
+        ctx.save()
+        // 1は横に伸びていく拡大
+        // 4はたてに伸びていく拡大
+
+        ctx.fillStyle = "rgb(255, 0, 0)";
+        ctx.transform(2, 0 , 0, 2, 0, 0);
+        ctx.fillRect(0, 0, 100, 100);
+        // 2は横方向から、上からだんだん降りていく（傾き）
+        // 3は縦方向から、下からだんだん上っていく（傾き）
+
+        ctx.fillStyle = "rgb(255, 255, 0)";
+        ctx.transform(1, 2 , 2, 1, 0, 0);
+        ctx.fillRect(0, 0, 100, 100);
+
+        // 5は横方向から、元の位置から移動した位置に置く（移動）
+        // 6は縦方向から、元の位置から移動した位置に置く（移動）
+
+        ctx.fillStyle = "rgb(0, 255, 0)";
+        ctx.transform(1, 1 , 1, 1, 2, 2);
+        ctx.fillRect(0, 0, 100, 100);
+
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        ctx.fillRect(0, 0, 100, 100);
+
+    </script>
+</body>
+</html>

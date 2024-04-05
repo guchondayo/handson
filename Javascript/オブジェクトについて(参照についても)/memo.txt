@@ -1,0 +1,4 @@
+【オブジェクト】オブジェクトは参照だが、直接代入せずにここのバリューだけを参照にすることは問題なし
+https://jsfiddle.net/guchon/z5v0xbf9/16/
+【オブジェクト】実はDOMで取得できるオブジェクトは配列っぽいけど配列ではない。
+https://jsfiddle.net/guchon/z5v0xbf9/12/

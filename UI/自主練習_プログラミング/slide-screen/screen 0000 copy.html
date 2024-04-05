@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body class="hide">
+    <div class="tuuka"></div>
+    <img src="./test.png" alt="" class="picture-area" />
+  </body>
+
+  <style>
+    /* 学習前作業プラン */
+    /* 1.画像を作成する */
+    /* 2.左にイメージを作成する */
+    /* 3.クリックしたらアニメーションで右の見えないところまで行く */
+
+    /* 必要だったこと */
+    /* 1.画像とスライドの２つタグが必要(アニメーションは別にポジションでいいかも) */
+    /* 2.一瞬でも重なるので、親子関係なしでpositionを別に張る⇒親子道連れの法則 */
+    /* 3.今後これはひつようになるかわからないんだけど、X方向にはみ出ないよう3.overflow-x: hidden; x 軸方向のオーバーフローを非表示にする(テキストにも書いてあった)  */
+    /* 4.アニメーションで移動させる */
+    /* 5.アニメーションで透過させる */
+
+    /* コツ */
+    /* animation-delayするときは、delayする前のスタイルに気を配っておくこと*/
+    /* z-index: 0;って重なりを表すと思うんだけど、positionが必要⇒つまり、重ねる時はポジション必要なんだなってわかる*/
+    /* top: 0; left: 0; right: 0; bottom: 0;: 要素を親要素の上端、左端、右端、下端に配置します。つまり、要素が親要素全体を覆うように配置されます。(親と全く同じ) */
+    /* ＊50.1% アニメーションの途中で一瞬行うとき */
+    /* ＊   vertical-align: bottom;インライン要素の底ズレが消えるらしいよ！ */
+
+    .tuuka {
+      position: absolute;
+      animation: slideAnimation 2s forwards;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      width: 100%;
+      background-color: gray;
+      height: 100%;
+    }
+    .hide {
+      overflow-x: hidden; /* x 軸方向のオーバーフローを非表示にする */
+    }
+    @keyframes slideAnimation {
+      0% {
+        left: 0;
+        right: 100%;
+      }
+      50% {
+        left: 0;
+        right: 0;
+      }
+      100% {
+        left: 100%;
+        right: 0;
+      }
+    }
+
+    .picture-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      object-fit: contain; /* または "cover" を試してみてください */
+      animation: opacityAnimation 3s forwards;
+      animation-delay: 1s;
+      opacity: 1;
+      overflow: hidden; /* x 軸方向のオーバーフローを非表示にする */
+    }
+
+    @keyframes opacityAnimation {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0;
+      }
+      50.1% {
+        opacity: 1;
+        transform: scale(1.5);
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  </style>
+</html>

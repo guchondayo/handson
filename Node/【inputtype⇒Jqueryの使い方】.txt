@@ -1,0 +1,5 @@
+【inputtype⇒Jqueryの使い方】
+<input type="hidden" class="browser" name="browser" value=listData>
+ar valueByClass = $('.className').val(); // クラス名が className の要素の値を取得
+var valueById = $('#elementId').val(); // IDが elementId の要素の値を取得
+var valueByName = $('[name="elementName"]').val(); // name属性が elementName の要素の値を取得
