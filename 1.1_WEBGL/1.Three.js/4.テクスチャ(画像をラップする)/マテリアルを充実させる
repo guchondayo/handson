@@ -1,0 +1,12 @@
+
+const textureLoader = new THREE.TextureLoader();
+const colorTexture = textureLoader.load('./assets/image.JPG');
+
+// カラースペースと繰り返しの設定
+colorTexture.colorSpace = THREE.SRGBColorSpace;
+// colorTexture.repeat.x = 2;
+// colorTexture.repeat.y = 3;
+
+// テクスチャのラッピングモードの設定
+colorTexture.wrapS = THREE.RepeatWrapping;
+colorTexture.wrapT = THREE.RepeatWrapping;

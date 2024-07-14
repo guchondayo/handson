@@ -1,0 +1,52 @@
+☆描画の基本的な流れ
+    ＊まず最低限必要なものは？
+        1.オブジェクトそのもの
+        2.オブジェクトの位置
+        3.カメラの設定
+        4.カメラの位置
+        以上４つが必要になっていきます。
+
+    ＊そして基本的には各手順が同じです
+        1.配列や流し込むパラメータを作成する
+        2.WEBGL専用の配列そのものをcreateを使って生成する
+        3.mat4.translateなどのラッパーオブジェクト(mat4の下にあるメソッド)などをつかって実行する
+        ＊その際に1と2を引数とする
+
+    ＊バッファの流し方は少し違う⇒前提としてすでに配列は作成されているものとする
+        1.バッファー配列をバインドする
+        2.バッファ配列を設定する
+        3.バッファー配列を有効にする
+        4.上記の行為を位置、色、番号すべてに設定をすること
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+        gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+        gl.vertexAttribPointer(programInfo.attribLocations.vertexColor, 4, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+    
+    ＊ユニフォームを書く
+        gl.useProgram(programInfo.program);
+        gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
+        gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, combinedModelViewMatrix);
+    ＊要素をここで初めて記述する
+        gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+        ＊詳細
+            gl.drawElements
+            この関数は、バッファに格納されているインデックスに基づいてプリミティブを描画します。
+
+            gl.TRIANGLES
+            この定数は、描画するプリミティブのタイプを指定します。ここでは、三角形を描画します。
+
+            36
+            描画する頂点のインデックスの数です。ここでは、36個のインデックスを使用して描画します。各インデックスは三角形の1つの頂点を示しますので、12個の三角形を描画します。
+
+            gl.UNSIGNED_SHORT
+            インデックスデータの型を指定します。ここでは、インデックスが16ビットの符号なし整数（unsigned short）であることを示しています。
+        ☆重要！伏線回収
+            バッファや行列などである程度の頂点や色を設定しました。しかしこれをすべて手でやるのはほぼ難しいです。
+            そこで36という数字を見ていただくと、三角形の頂点の数を設定しています。この数に合わせてより細かく頂点をＧＰＵが自動で設定してくれます。
+            あなたはこの頂点を手動で設定したいですか？だからＧＰＵという高速処理の天才に任せればいいんです！

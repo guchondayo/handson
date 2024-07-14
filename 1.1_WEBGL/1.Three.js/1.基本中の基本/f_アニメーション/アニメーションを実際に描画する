@@ -1,0 +1,106 @@
+★実際にアニメーションを描画するには？
+まず関数内に記載する必要事項
+1.オブジェクトの動き
+2.レンダリング
+3.requestAnimationFrame＋コールバック
+
+＊順番が大事！！
+1.box.position.x += 1など、変化後の動きを書く
+2.レンダリングする。字を書くときみたいにまずは手首を移動させてから紙に書くよね？
+3.requestAnimationFrameのコールバックに関数を入れる
+
+ペンを書く時のイメージしてみる
+const box = () => {
+    1.方向性を決めて
+    mesh.rotation.z += 0.01;
+    2.実際に書く
+    renderer.render(scene, camera)  
+    3.繰り返す
+    requestAnimationFrame(box)
+}
+
+
+box()
+
+
+
+
+
+
+
+
+＊一番最初の関数は普通に呼び出せ！！！！
+1.一回目の関数は普通に実行する
+2.宣言した関数の中をのぞく
+3.レンダリングした後にrequestAnimationFrameをつかって、引数に関数を入れて呼び出す
+
+
+
+
+
+
+
+
+
+
+
+requestAnimationFrameとforで回すのは何が違うの？
+⇒スピードが速すぎて、レンダリング終わる前に次行っちゃう！
+⇒つまりアニメーションにむいてない
+
+3. requestAnimationFrame と for ループの比較
+特徴	requestAnimationFrame	for ループ
+実行タイミング	ブラウザのフレーム更新に同期	即座に全ての反復を実行
+パフォーマンス	ブラウザのパフォーマンスを考慮し、アイドル時には停止	パフォーマンスの最適化なし、CPUに負荷をかける
+アニメーション	スムーズなアニメーションに最適	アニメーションには不向き、即時実行
+用途	アニメーション、フレームごとの処理	大量のデータ処理、一度きりの繰り返し処理
+停止方法	cancelAnimationFrame で停止	ループ内で条件を満たすと停止
+リソースの使用	アイドル時にリソース使用を減少	一度に多くのリソースを消費
+
+つまり
+メリット: 即時に大量のデータ処理が可能。
+デメリット: アニメーションやフレームごとの更新には不向き
+
+
+★Deltatime方式で、動きを時間で管理する方法
+〇以下のような見解になります。時間の差分によって移動の幅が変わるよん
+なるほどね  mesh.rotation.y += 0.001 * deltaTime;を使わないことによって
+requestanimationframeの実行時間次第になって
+deltaTimeだとちゃんと時間で管理しますよ的なことか
+
+let previousTime = Date.now();
+
+const tick = () => {
+    const currentTime = Date.now();
+    const deltaTime = currentTime - previousTime;
+    previousTime = currentTime;
+
+〇以下のような見解になります。時間の差分によって移動の幅が変わるよん
+    mesh.rotation.y += 0.001 * deltaTime;
+
+    // シーンのレンダリング
+    renderer.render(scene, camera);
+
+    // 次のフレームでtickを呼び出す
+    window.requestAnimationFrame(tick);
+}
+
+tick();
+
+★秒数を算出してみよう
+console.log(Math.floor(elapsedTime), "秒経過")
+const tick2 = () => {
+    // 経過時間を取得
+    const elapsedTime = clock.getElapsedTime();
+    console.log(Math.floor(elapsedTime), "秒経過")
+    // オブジェクトを更新
+    cube.rotation.y = elapsedTime;
+
+    // シーンをレンダリング
+    renderer.render(scene, camera);
+
+    // 次のフレームでtickを呼び出す
+    window.requestAnimationFrame(tick2);
+}
+
+

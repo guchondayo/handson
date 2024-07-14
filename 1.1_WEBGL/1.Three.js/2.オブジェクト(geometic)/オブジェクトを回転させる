@@ -1,0 +1,9 @@
+★オブジェクトの回転を表すにはどうしたらいいか
+// スケールを使うと露骨に大きさが変わる
+cube.rotation.x = 2
+cube.rotation.y = 0.25
+cube.rotation.z = 0.5
+
+
+mesh.rotation.x = Math.PI * 0.25
+mesh.rotation.y = Math.PI * 0.25

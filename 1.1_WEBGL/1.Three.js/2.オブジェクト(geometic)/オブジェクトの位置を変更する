@@ -1,0 +1,39 @@
+★直接オブジェクトの位置を操作する方法には2つある
+1.直接オブジェクトの位置を操作する方法
+2.BufferAttributeを使用して位置を動的に変更する方法
+
+1.直接オブジェクトの位置を操作する方法
+cube.position.x = 8
+cube.set(3,5,5)
+
+2.BufferAttributeを使用して位置を動的に変更する方法
+2-1.頂点の位置を動的に変更する
+positionsArray[0] += 1;  // 第1頂点のx座標を変更
+2-2.BufferGeometryの更新を反映する
+geometry.attributes.position.needsUpdate = true;
+＊一応THREE.BoxGeometryを使って作成したジオメトリでも、後からBufferAttributeを使用して頂点の位置を動的に変更することが可能です。
+大事なのが
+1.メッシュした後のポジションを変えるか
+2.配列そのものの値を変えるか
+ということ
+
+★これを応用するとこんなこともできる
+1.空の配列を作成 Float32Array(ここに要素の数個加える)
+2.この空の配列にランダムな値を加える
+3.属性にする
+4.ジオメトリの属性にくっつける
+
+// Create an empty BufferGeometry
+const geometry = new THREE.BufferGeometry()
+
+// Create 50 triangles (450 values)
+const count = 50
+const positionsArray = new Float32Array(count * 3 * 3)
+for(let i = 0; i < count * 3 * 3; i++)
+{
+    positionsArray[i] = (Math.random() - 0.5) * 4
+}
+
+// Create the attribute and name it 'position'
+const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3)
+geometry.setAttribute('position', positionsAttribute)

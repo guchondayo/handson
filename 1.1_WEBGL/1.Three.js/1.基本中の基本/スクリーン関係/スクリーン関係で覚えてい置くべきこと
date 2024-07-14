@@ -1,0 +1,51 @@
+
+スクリーンの大きさには２種類ある
+1.HTML側のサイズ（ビューポートのサイズ）
+2.Canvas（Three.jsシーン）
+これらは基本別物なので、自分で調節しなければならない
+自分で調節？
+1.ビューポートなうを取得
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight
+}
+2.カメラのアスペクト比を画面の大きさが変わったので計算
+3.これをレンダー(HTMLに渡すときにサイズも渡す)
+
+★毎回何かあったときにこれを書くのが面倒なので自動でかわればいいなぁ
+
+
+window.addEventListener('resize', () => {
+    // 新しいサイズを取得
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    // カメラのアスペクト比を更新
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    // レンダラーのサイズを更新
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // ピクセル比も更新
+});
+
+
+
+javascript
+コードをコピーする
+// ウィンドウサイズ変更時の処理
+window.addEventListener('resize', () => {
+    // 新しいサイズを取得
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    // カメラのアスペクト比を更新
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    // レンダラーのサイズを更新
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // ピクセル比も更新
+});
+まとめ
+手動でウィンドウサイズを取得して毎回レンダラーに設定する作業は非常に面倒で、ミスが生じやすいです。resize イベントリスナーを使ってサイズ調整を自動化することで、コードの保守性が向上し、ユーザー体験も一貫したものになります。

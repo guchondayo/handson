@@ -1,0 +1,74 @@
+★LookATでカメラの位置を動かしてみる、カメラをX方向に動かす、Y方向に動かす、Z方向に動かす
+カメラ
+1.X方向に動かす、
+2.Y方向に動かす、
+3.Z方向に動かす
+
+camera.lookAt(new THREE.Vector3(1, 2, 0));
+つまり、Xの値を増やすと、カメラが右に行くから、オブジェクトが左に見えるようになる
+つまり、yの値を増やすと、カメラが上に行くから、オブジェクトが下に見えるようになる
+つまり、zの値を増やすと、カメラが手前に行くから、オブジェクトが手前に見えるようになる
+
+★ブラウザの位置を取得する方法を考える
+1.event/mousemove/clientX
+window.addEventListener("mousemove", (event)=>{
+
+console.log(event.clientX, event.clientY)
+
+})
+
+lookAt の具体的な利用シーン
+カメラの視点をオブジェクトに向ける:
+
+シーン内で特定のオブジェクトやキャラクターを常に視界に捉えておきたい場合に、カメラをそのオブジェクトに向けさせます。
+例: プレイヤーのキャラクターを追尾するカメラなど。
+javascript
+コードをコピーする
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 5, 10); // カメラを配置
+camera.lookAt(character.position); // キャラクターの位置に向ける
+敵キャラクターがプレイヤーを向く:
+
+敵キャラクターがプレイヤーの位置に向いて攻撃する、あるいは追いかける動きを実現します。
+例: 敵がプレイヤーを視認し、向きを変えて追尾し始める。
+javascript
+コードをコピーする
+const enemy = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+scene.add(enemy);
+enemy.position.set(-2, 0, 4);
+enemy.lookAt(player.position); // 敵キャラクターをプレイヤーの位置に向ける
+オブジェクトがカメラに向く:
+
+常にカメラの方を向いて表示されるようにオブジェクトを設定できます。例えば、ラベルやアイコンが画面上で常に見やすい位置にあるようにする。
+例: ユーザーインターフェースの要素が常にカメラを向いて表示される。
+javascript
+コードをコピーする
+const label = new THREE.Mesh(new THREE.PlaneGeometry(1, 0.5), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+label.position.set(2, 2, -3);
+label.lookAt(camera.position); // ラベルをカメラに向ける
+照準やレーザーがターゲットを向く:
+
+照準器やレーザー、銃口などがターゲットを指すように設定します。
+例: プレイヤーが照準を敵に向けたとき、その方向を示すビームやレーザー。
+javascript
+コードをコピーする
+const laser = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 5), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+laser.position.set(0, 0, 0);
+laser.lookAt(target.position); // レーザーをターゲットに向ける
+視線の追跡:
+
+キャラクターの目線が特定の物体やキャラクターに向くように設定できます。
+例: キャラクターの目がターゲットに合わせて動く。
+javascript
+コードをコピーする
+const eye = new THREE.Mesh(new THREE.SphereGeometry(0.5), new THREE.MeshBasicMaterial({ color: 0x0000ff }));
+eye.position.set(0, 1, 0);
+eye.lookAt(target.position); // 目をターゲットに向ける
+視覚的な動きの強調
+lookAt を使うと、オブジェクトやカメラが視覚的にターゲットを注視している様子を自然に表現できます。動きを伴うアニメーションや動的なシーンでは特に有効です。これにより、以下のような効果が得られます：
+
+注視効果: オブジェクトが特定の方向を「見る」動作を自然に表現できるため、視覚的な興味を引く演出が可能。
+ダイナミックなシーン: カメラが常にキャラクターを追尾したり、オブジェクトがターゲットに向かう動きを直感的に作成できる。
+操作性の向上: カメラやオブジェクトの方向を手動で調整する必要がないため、スクリプトが簡潔になり、動きの調整が容易。
+例: カメラをターゲットに向ける
+Three.js でカメラがターゲットを注視する動きを実装する簡単なコード例です。

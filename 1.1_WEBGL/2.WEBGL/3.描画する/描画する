@@ -1,0 +1,53 @@
+// シーンにおとしこむ
+function drawScene(gl, programInfo, buffers) {
+//　☆いったんクリア
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);  // クリア色の設定
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);  // クリア
+//　☆『カメラ』で必要なのは？視野角/アスペクト比/遠近だった気がする
+    const fieldOfView = 45 * Math.PI / 180;  // 視野角
+    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    const zNear = 0.1;
+    const zFar = 100.0;
+// ☆glMatrix の mat4 モジュールを使用(インポートするかも)
+// ☆glMatrixをインストールしておくnpm　install
+    const mat4 = glMatrix.mat4;
+// ☆ここから配列をつくる
+    const projectionMatrix = mat4.create();
+// ☆つまりデフォルトで配列を作ったら流し込む。残りは右側に、、
+    mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+// ☆　カメラを移動する時に必要なのはビュー行列
+    const cameraPosition = [0, 0, 5]; // カメラの位置
+    const targetPosition = [0, 0, 0]; // カメラが見るターゲットの位置
+    const upDirection = [0, 1, 0];    // カメラの「上」方向
+    const viewMatrix = mat4.create();
+    mat4.lookAt(viewMatrix, cameraPosition, targetPosition, upDirection);
+// ☆モデルをつくるおなじく配列⇒移動
+    const modelViewMatrix = mat4.create();
+    mat4.translate(バインドするmodelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
+// ☆作ったバッファを
+// バインドして初めてシェーダーと連携できるってことでいいよね？
+// そのあと初期値を設定して
+// そのあと有効にしていると考えてます
+// programInfo.attribLocations.vertexPosition: 頂点属性の位置（ロケーション）。
+// 3: 各頂点属性が3つの要素（x, y, z）から構成される。
+// gl.FLOAT: データ型が浮動小数点数（float）である。
+// false: データを正規化しない。
+// 0: 各頂点のデータ間の間隔（ストライド）。0の場合、要素が連続していることを示します。
+// 0: バッファの先頭からデータを読み始める。
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+    gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+// カラーの設定も同じような手順
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+    gl.vertexAttribPointer(programInfo.attribLocations.vertexColor, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor);
+// インダイスはバインドさえすればOK
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+// ここは最初に書いたモデルやカメラをどう動かすかという設定
+    gl.useProgram(programInfo.program);
+    gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
+    gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+// 要素を乗っける
+    gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+}
+drawScene(gl, programInfo, buffers);

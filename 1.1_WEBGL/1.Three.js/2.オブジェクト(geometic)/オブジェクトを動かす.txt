@@ -1,0 +1,126 @@
+★オブジェクトが動く仕組みについて
+1.オブジェクトが存在します
+box
+2.今いるボックスの位置+aで移動します
+box.position.x += 1
+3.移動したものをさらに描画します
+renderer.render(scene, camera)
+4.これを繰り返します。
+＊前より+aでずらして書いていくイメージ
+★動きの4原則（オブジェクトには以下のメンバーは完備されている）
+1.position（オブジェクトを移動）
+例）
+2.scale（オブジェクトのサイズを変更）
+例）
+3.rotation（オブジェクトを回転）
+例）
+4.quaternion（回転のため、詳細は後で説明します）
+例）
+★ポジション
+javascript
+コードをコピーする
+console.log(mesh.position.length())
+別のVector3からの距離を取得することができます（カメラを作成した後でこのコードを使用してください）：
+
+javascript
+コードをコピーする
+console.log(mesh.position.distanceTo(camera.position))
+値を正規化することもできます（ベクトルの長さを1ユニットに減らしますが、方向は保持されます）：
+
+javascript
+コードをコピーする
+console.log(mesh.position.normalize())
+x、y、zを別々に変更する代わりに、set(...)メソッドを使用して値を変更することもできます：
+
+javascript
+コードをコピーする
+mesh.position.set(0.7, -0.6, 1)
+
+軸ヘルパーの使い方
+const axesHelper = new THREE.AxesHelper(2)
+scene.add(axesHelper)
+
+★距離をとることによって何ができるのか？
+1. 距離の計測
+シーンの原点からオブジェクトの位置までの距離を簡単に計算できます。これにより、オブジェクトのスケールやカメラの位置を調整したり、シーンのレイアウトを確認したりできます。
+1.シーンの原点の距離：lengthをつかう
+2.オブジェクトからオブジェクトまでの距離distanceTo
+例）
+console.log(mesh.position.length());
+このコードは、mesh の位置ベクトルの長さ（原点からの距離）を計算し、コンソールに出力します。
+★使い方
+2. 距離に基づくインタラクション（距離が要因になって関数が実行）：カメラがオブジェクトに近づきすぎた場合に警告を表す
+const cameraPosition = new THREE.Vector3(5, 5, 5);
+const distance = mesh.position.distanceTo(cameraPosition);
+if (distance < 2) {
+    console.log('Warning: Camera is too close to the object!');
+}
+3. アニメーションのトリガー（距離が要因になってアニメーションが実行）
+＊たとえば、カメラがオブジェクトに一定の距離以内に入った場合にアニメーションを開始します。
+
+const cameraPosition = new THREE.Vector3(10, 10, 10);
+const distance = mesh.position.distanceTo(cameraPosition);
+
+if (distance < 5) {
+    // アニメーションを開始
+    console.log('Start animation');
+}
+4. 衝突判定
+2つのオブジェクト間の距離を測定
+2-1.お互いの距離を見る
+2-2.Aの半径とBの半径の距離より縮まったら、関数が実行される
+＊つまり、前提として、distanceToのきょりは、中心地と中心地を見ているってことだね
+const distance = object1.position.distanceTo(object2.position);
+
+if (distance < object1.boundingRadius + object2.boundingRadius) {
+    console.log('Collision detected!');
+}
+★実際のシナリオでの使用例
+カメラのコントロール: 距離を測定して、カメラの位置やズームレベルを調整する。
+ユーザーインターフェース: ユーザーがオブジェクトに近づいたときに、情報を表示したり、ツールチップを表示する。
+ゲーム開発: プレイヤーキャラクターとアイテムや敵キャラクターの距離に基づいて、インタラクションやイベントをトリガーする。
+まとめ
+console.log(mesh.position.length()) は、シーン内のオブジェクトの位置関係や距離を理解し、インタラクションやアニメーション、衝突判定などに役立てることができます。 distanceTo メソッドと組み合わせることで、さらに複雑な距離計算が可能になります。
+
+
+
+
+
+
+
+1. Transformations の組み合わせ
+コード:
+
+javascript
+コードをコピーする
+mesh.position.x = 0.7
+mesh.position.y = -0.6
+mesh.position.z = 1
+mesh.scale.x = 2
+mesh.scale.y = 0.25
+mesh.scale.z = 0.5
+mesh.rotation.x = Math.PI * 0.25
+mesh.rotation.y = Math.PI * 0.25
+説明:
+このコードは、mesh オブジェクトに対して 位置 (position), スケール (scale), 回転 (rotation) の変換を適用しています。それぞれの変換は以下の通りです:
+
+位置 (Position):
+
+mesh.position.x = 0.7: x 軸に 0.7 移動。
+mesh.position.y = -0.6: y 軸に -0.6 移動。
+mesh.position.z = 1: z 軸に 1 移動。
+スケール (Scale):
+
+mesh.scale.x = 2: x 軸方向に 2 倍のスケール。
+mesh.scale.y = 0.25: y 軸方向に 0.25 倍のスケール。
+mesh.scale.z = 0.5: z 軸方向に 0.5 倍のスケール。
+回転 (Rotation):
+
+mesh.rotation.x = Math.PI * 0.25: x 軸を中心に 45 度回転 (π の 1/4)。
+mesh.rotation.y = Math.PI * 0.25: y 軸を中心に 45 度回転 (π の 1/4)。
+効果:
+
+位置はオブジェクトの中心を移動させます。
+スケールはオブジェクトのサイズを変更します。
+回転はオブジェクトの向きを変更します。
+これらの変換は順序に関係なく適用され、最終的なオブジェクトの状態は同じです。つまり、mesh.position, mesh.scale, mesh.rotation をどの順序で設定しても、結果は同じです。

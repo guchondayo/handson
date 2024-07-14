@@ -1,0 +1,83 @@
+attribute
+attribute は、頂点シェーダーに渡される頂点ごとのデータを定義するためのキーワードです。各頂点に固有の情報（位置、色、法線ベクトルなど）を格納します。
+vec4
+vec4 は、4つの浮動小数点数を持つベクトル型です。他のベクトル型としては、vec2（2つの浮動小数点数）、vec3（3つの浮動小数点数）などがあります。
+
+aVertexPosition
+aVertexPosition は変数名で、attributeとして宣言された頂点の位置データを格納します。
+
+1.attributeは頂点データであることの宣言
+2.ベクトル型みたいな型、ほかに例を出せばわかりやすい
+    2-1.vec2（2つの浮動小数点数）
+    2-2.vec3（3つの浮動小数点数）
+3.aVertexPositionは『位置データを表す』のに必要な変数名です
+
+★ここで覚えておくべきこと：それぞれがどんな役割があるかをしっかり理解することが大事
+ものにたとえる
+例）
+1.バッファー⇒椅子をつくる
+2.モデル行列⇒椅子を配置する場所を決める
+3.ビュー行列⇒カメラを配置する
+4.投影行列⇒アスペクト比やクリップの設定
+つまり
+1.バッファー⇒オブジェクトそのものを作成するというイメージ
+2.モデル行列⇒作ったオブジェクトを動かすイメージ
+3.ビュー行列⇒カメラの位置を動かすというイメージ
+4.投影行列⇒アスペクト比やクリップの設定
+★そのあとのプロセル
+1.コンパイル：見ていると、コンパイルは、『それぞれ』のシェーダーがGPUに計算してもらうための翻訳ってことね
+2.アタッチ：アタッチではその翻訳された頂点とフラグメントをがっちゃんこするのね
+3.リンク：リンクでそれらを統合してGPUに『送信可能な状態』にする状況ね
+＊この目的はGPUという言葉通じないけど計算が天才的に早い人にお願いしてもらう必要があるからである
+以下：
+3Dを作るにはこのピクセルには大量の三角形やどの色がいいとかめっちゃ細かい計算があるよね。
+だからそこはGPUという計算の専門家に任せようってことか
+＊ちなみに、ここまでの流れは、単純にGPUに流す準備ができたっていうだけの話よ。
+
+
+★JSのコードのなかで場所を取得する / shaderProgram ここまででシェーダーのプログラムを『宣言』した状態です。
+
+
+
+
+シェーダーのコンパイル (Compile)
+コンパイルは、シェーダーのソースコードをGPUが理解できる形式に変換するプロセスです。WebGLでは、シェーダーコードは文字列として提供されますが、このままではGPUが実行できないため、まずコンパイルを行います。
+
+javascript
+コードをコピーする
+const shader = gl.createShader(shaderType); // シェーダーオブジェクトを作成
+gl.shaderSource(shader, shaderSource);      // シェーダーのソースコードを設定
+gl.compileShader(shader);                   // シェーダーをコンパイル
+シェーダーのアタッチ (Attach)
+アタッチは、コンパイルされたシェーダーオブジェクトをシェーダープログラムに追加するプロセスです。シェーダープログラムは、頂点シェーダーとフラグメントシェーダーの両方を持つ必要があります。
+
+javascript
+コードをコピーする
+const shaderProgram = gl.createProgram();   // シェーダープログラムを作成
+gl.attachShader(shaderProgram, vertexShader);   // 頂点シェーダーをプログラムにアタッチ
+gl.attachShader(shaderProgram, fragmentShader); // フラグメントシェーダーをプログラムにアタッチ
+シェーダーのリンク (Link)
+リンクは、アタッチされた頂点シェーダーとフラグメントシェーダーを1つの実行可能なシェーダープログラムに結合するプロセスです。リンクに成功すると、シェーダープログラムが完成し、描画に使用できます。
+
+javascript
+コードをコピーする
+gl.linkProgram(shaderProgram);  // シェーダープログラムをリンク
+
+
+
+★ 属性位置の取得
+ここで大事なこと
+1.GPUに計算してもらった計算結果にアクセスするとき使う
+2.この状態はまだ『宣言』しているだけである
+
+const programInfo = {
+    program: shaderProgram,
+    attribLocations: {
+        vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+        vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+    },
+    uniformLocations: {
+        projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+        modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+    },
+};

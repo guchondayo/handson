@@ -1,0 +1,10 @@
+★レンダリングについて
+1.WEBGLをレンダリングするのでWEBGLレンダリングする。
+2.HTMLで表示させる範囲を入力する
+3.DOM操作によってHTMLタグを追加すること
+4.そしてシーンとカメラを引数にレンダリングしていく
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(sizes.width, sizes.height);
+document.body.appendChild(renderer.domElement);
+renderer.render(screen,camera)

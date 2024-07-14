@@ -1,0 +1,37 @@
+
+オブジェクトを一気にまとめて作る方法はないのか？
+自分で関数を使えばまぁできなくもなさそうだけど
+もっと簡単な方法として、グループに登録しておくと
+似たり寄ったりのオブジェクトも簡単に作ることができます！
+1.グループを生成
+2.プロパティを登録する
+3.シーンに代入
+4.通常通りにメッシュに代入する
+5.異なるポジションを代入する
+6.シーンではなく『グループ』にaddする。
+
+const group = new THREE.Group()
+group.scale.y = 2
+group.rotation.y = 0.2
+scene.add(group)
+
+const cube1 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial({ color: 0xff0000 })
+)
+cube1.position.x = -1.5
+group.add(cube1)
+
+const cube2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial({ color: 0xff0000 })
+)
+cube2.position.x = 0
+group.add(cube2)
+
+const cube3 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial({ color: 0xff0000 })
+)
+cube3.position.x = 1.5
+group.add(cube3)

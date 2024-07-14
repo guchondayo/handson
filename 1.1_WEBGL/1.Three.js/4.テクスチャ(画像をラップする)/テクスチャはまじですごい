@@ -1,0 +1,19 @@
+★テクスチャでできること
+オブジェクトに画像を張り付ける(マッピングできる)
+1.ローディングマネージャを生成する
+2.画像をロードする
+2-1,パス/マッピング（コールバック）/？/アップデートしていいよ
+3.更新する
+const colorTexture = textureLoader.load(
+    './assets/image.JPG',
+    (texture) => {
+        console.log('Texture loaded successfully');
+        // テクスチャがロードされたら、マテリアルに適用
+        material.map = texture;
+        material.needsUpdate = true;
+    },
+    undefined,
+    (error) => {
+        console.error('An error happened', error);
+    }
+);

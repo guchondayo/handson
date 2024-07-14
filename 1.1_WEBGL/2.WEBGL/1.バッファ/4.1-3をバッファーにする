@@ -1,0 +1,41 @@
+〇前提
+WEBGLを生成しておくこと！
+ const gl = canvas.getContext('webgl');
+
+★バッファーの作り方（例）頂点データ）
+1.バッファーを生成する：WebGLのバッファオブジェクトを生成します。
+const positionBuffer = gl.createBuffer();
+2.バッファーにこれから投入するバッファーの種類を宣言する
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+3.バッファーに頂点データを投入する
+gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+
+★バッファーの書き方
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+const colorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+
+const indexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+Q：バッファは毎回宣言してバインドしてっていうメンドクサイやり方なのなんで？
+1. パフォーマンスの最適化
+データ転送の効率化: バッファを使用することで、データを一度GPUに転送し、その後はGPU内で効率的にアクセスできます。これにより、描画ごとにCPUからGPUへのデータ転送を最小限に抑えられ、パフォーマンスが向上します。
+メモリ管理: バッファを利用することで、GPUメモリを効率的に管理できます。これにより、大量のデータを扱う際のパフォーマンスやメモリ使用量が最適化されます。
+2. 汎用性と柔軟性
+多様なデータ構造の対応: バッファを個別に宣言しバインドすることで、位置情報、色情報、法線情報など、多様なデータ構造に対応できます。これにより、複雑なシーンやオブジェクトを効率的に管理できます。
+シェーダーとの統合: シェーダーとの連携が容易になります。頂点シェーダーとフラグメントシェーダーは、それぞれ異なるバッファからデータを受け取ることができます。
+動的データの更新: バッファをバインドし直すことで、データの変更が容易になります。これは、アニメーションや動的に変化するシーンで重要です。
+3. GPUの操作に対する明示性
+描画の明確な制御: バッファのバインドは、どのデータが現在の描画操作に使用されるかを明示的に制御します。これにより、デバッグやコードの理解が容易になります。
+データの整合性: バッファを毎回バインドすることで、異なるデータの間での競合や誤用を防ぎます。
+4. 多様なオブジェクトに対するサポート
+異なるオブジェクトの描画: 複数のオブジェクトやメッシュを描画する際に、バッファを適切にバインドし直すことで、異なるデータを柔軟に扱えます。これにより、シーンの管理が容易になります。
+5. 標準的なAPI設計
+OpenGLの伝統: WebGLはOpenGLの仕様に基づいて設計されています。OpenGLでも同様にバッファのバインド操作が行われており、WebGLもこの標準に従っています。これにより、WebGLとOpenGLの間での知識の共有が容易です。
