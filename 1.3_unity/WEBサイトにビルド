@@ -1,0 +1,77 @@
+UnityのアニメーションをWebGLにエクスポートしてホームページに統合する手順
+ステップ1: Unityプロジェクトの準備
+Unityでプロジェクトを作成:
+Unity Hubを使って新しいプロジェクトを作成します。テンプレートとして「3D」を選択します。
+シーンを設定:
+Hierarchyウィンドウで必要なゲームオブジェクト（カメラ、ライト、アニメーションオブジェクトなど）を配置します。
+アニメーションやエフェクトを追加して、オープニングアニメーションを完成させます。
+ステップ2: WebGLビルド設定
+ビルド設定の変更:
+
+Unityエディターで File > Build Settings を選択します。
+Platform リストから WebGL を選び、 Switch Platform ボタンをクリックします。
+シーンの追加:
+
+Scenes in Build セクションに、ビルドに含めたいシーンを追加します。通常は現在開いているシーンがデフォルトで追加されています。
+Player Settingsの調整:
+
+Player Settings ボタンをクリックし、ビルド設定を調整します。特に、WebGLテンプレートや解像度、メモリ設定などを確認します。
+ステップ3: ビルドの実行
+ビルドの実行:
+Build ボタンをクリックし、ビルド出力先のフォルダを選択します。
+UnityがWebGL形式でプロジェクトをビルドします。このプロセスが完了すると、指定したフォルダにWebGLビルドが出力されます。
+ステップ4: ホームページへの統合
+ビルド出力ファイルの配置:
+
+出力されたWebGLビルドフォルダ（通常は Build フォルダ）をホームページのサーバー上に配置します。
+HTMLファイルの編集:
+
+ホームページのHTMLファイルにUnity WebGLビルドを埋め込みます。以下のように <iframe> タグや <div> タグを使用して埋め込みます。
+html
+コードをコピーする
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity WebGL Integration</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #unityContainer {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="unityContainer"></div>
+    <script>
+        var buildUrl = "Build";
+        var loaderUrl = buildUrl + "/UnityLoader.js";
+        var config = {
+            dataUrl: buildUrl + "/Build.data",
+            frameworkUrl: buildUrl + "/Build.framework.js",
+            codeUrl: buildUrl + "/Build.wasm",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "Your Company",
+            productName: "Your Product",
+            productVersion: "1.0",
+        };
+        var container = document.querySelector("#unityContainer");
+        var canvas = document.createElement("canvas");
+        container.appendChild(canvas);
+        var loading = UnityLoader.instantiate(canvas, loaderUrl, config);
+    </script>
+</body>
+</html>
+サーバーの設定:
+
+ホームページがホスティングされているサーバーにビルドファイルをアップロードし、正しく表示されるか確認します。
+まとめ
+Unityを使って作成したアニメーションやインタラクティブなコンテンツは、WebGLを介してウェブページに簡単に統合できます。これにより、ホームページのオープニングアニメーションなど、視覚的に魅力的な要素を追加することができます。これらの手順に従うことで、Unityのパワフルな機能をウェブ上で活用することができます。

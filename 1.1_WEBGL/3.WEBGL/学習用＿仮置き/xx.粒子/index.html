@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere Example</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+<script>
+    var canvas = document.getElementById('canvas');
+    var gl = canvas.getContext('webgl');
+    if (!gl) {
+        console.error("WebGL not supported, falling back on experimental-webgl");
+        gl = canvas.getContext('experimental-webgl');
+    }
+    if (!gl) {
+        alert("Your browser does not support WebGL");
+    }
+
+    // 頂点シェーダーソースコード
+    var vertexShaderSource = `
+        attribute vec2 aPosition;
+        attribute vec2 aVelocity;
+        attribute float aLifeTime;
+        uniform float uTime;
+        void main(void) {
+            // パーティクルの位置を時間に基づいて更新
+            vec2 position = aPosition + aVelocity * uTime;
+            gl_Position = vec4(position, 0.0, 1.0);
+            gl_PointSize = 5.0; // パーティクルのサイズ
+        }
+    `;
+
+    // フラグメントシェーダーソースコード
+    var fragmentShaderSource = `
+        void main(void) {
+            gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0); // パーティクルの色（黄色）
+        }
+    `;
+
+    function compileShader(gl, shaderSource, shaderType) {
+        var shader = gl.createShader(shaderType);
+        gl.shaderSource(shader, shaderSource);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
+        }
+        return shader;
+    }
+
+    var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
+    var fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
+
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        console.error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+    }
+
+    gl.useProgram(shaderProgram);
+
+    // パーティクルの数
+    var numParticles = 1000;
+
+    // パーティクルデータの生成
+    var particleData = new Float32Array(numParticles * 5); // [x, y, vx, vy, lifeTime]
+        console.log("問1配列は何個ある？", particleData)
+    for (var i = 0; i < numParticles; i++) {
+        particleData[i * 5 + 0] = (Math.random() * 2 - 1) * 0.5; // x
+        particleData[i * 5 + 1] = (Math.random() * 2 - 1) * 0.5; // y
+        particleData[i * 5 + 2] = (Math.random() * 2 - 1) * 0.1; // vx
+        particleData[i * 5 + 3] = (Math.random() * 2 - 1) * 0.1; // vy
+        particleData[i * 5 + 4] = Math.random() * 2; // lifeTime
+    }
+
+    // 頂点バッファの作成とバインド
+    var particleBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, particleBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, particleData, gl.STATIC_DRAW);
+
+    var aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
+    var aVelocity = gl.getAttribLocation(shaderProgram, 'aVelocity');
+    var aLifeTime = gl.getAttribLocation(shaderProgram, 'aLifeTime');
+    var uTime = gl.getUniformLocation(shaderProgram, 'uTime');
+
+    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.enableVertexAttribArray(aPosition);
+    gl.vertexAttribPointer(aVelocity, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+    gl.enableVertexAttribArray(aVelocity);
+    gl.vertexAttribPointer(aLifeTime, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
+    gl.enableVertexAttribArray(aLifeTime);
+
+    var startTime = Date.now();
+
+    function draw() {
+        var currentTime = (Date.now() - startTime) / 1000.0;
+
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.uniform1f(uTime, currentTime);
+
+        gl.drawArrays(gl.POINTS, 0, numParticles);
+
+        requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+</script>
+
+</body>
+</html>

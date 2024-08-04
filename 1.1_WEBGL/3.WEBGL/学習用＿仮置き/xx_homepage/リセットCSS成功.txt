@@ -1,0 +1,3 @@
+★リセットCSS
+https://github.com/Andy-set-studio/modern-css-reset/blob/master/dist/reset.min.css
+https://www.bugbugnow.net/2022/10/fit-canvas-screen-size.html

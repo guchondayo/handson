@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Particle System</title>
+</head>
+<body>
+    <canvas id="glcanvas" width="800" height="600"></canvas>
+</body>
+<script>
+const canvas = document.getElementById('glcanvas');
+const gl = canvas.getContext('webgl');
+
+// シェーダープログラムの初期化
+const vertexShaderSource = `
+    attribute vec3 a_position;
+    attribute vec3 a_velocity;
+    attribute float a_lifetime;
+    attribute vec4 a_startColor;
+    attribute vec4 a_endColor;
+    varying vec4 v_color;
+    varying float v_size;
+    uniform float u_time;
+    uniform mat4 u_projection;
+    uniform mat4 u_view;
+    uniform vec3 u_offset;
+    void main() {
+        float progress = mod(u_time, a_lifetime) / a_lifetime;
+        vec3 gravity = vec3(0.0, -0.05, 0.0) * progress;
+        vec3 position = a_position + (a_velocity + gravity) * progress + u_offset;
+        v_color = mix(a_startColor, a_endColor, progress);
+        v_size = mix(6.0, 1.0, progress);
+        gl_Position = u_projection * u_view * vec4(position, 1.0);
+        gl_PointSize = v_size;
+    }
+`;
+
+const fragmentShaderSource = `
+    precision mediump float;
+    varying vec4 v_color;
+    void main() {
+        gl_FragColor = v_color;
+    }
+`;
+
+function createShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+
+function createProgram(gl, vertexShader, fragmentShader) {
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error(gl.getProgramInfoLog(program));
+        gl.deleteProgram(program);
+        return null;
+    }
+    return program;
+}
+
+const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+const program = createProgram(gl, vertexShader, fragmentShader);
+
+const aPositionLocation = gl.getAttribLocation(program, 'a_position');
+const aVelocityLocation = gl.getAttribLocation(program, 'a_velocity');
+const aLifetimeLocation = gl.getAttribLocation(program, 'a_lifetime');
+const aStartColorLocation = gl.getAttribLocation(program, 'a_startColor');
+const aEndColorLocation = gl.getAttribLocation(program, 'a_endColor');
+const uTimeLocation = gl.getUniformLocation(program, 'u_time');
+const uProjectionLocation = gl.getUniformLocation(program, 'u_projection');
+const uViewLocation = gl.getUniformLocation(program, 'u_view');
+const uOffsetLocation = gl.getUniformLocation(program, 'u_offset');
+
+const numParticles = 2000;
+const positions = new Float32Array(numParticles * 3);
+const velocities = new Float32Array(numParticles * 3);
+const lifetimes = new Float32Array(numParticles);
+const startColors = new Float32Array(numParticles * 4);
+const endColors = new Float32Array(numParticles * 4);
+
+for (let i = 0; i < numParticles; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 0.2;
+    positions[i * 3 + 1] = -0.5;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
+    velocities[i * 3] = (Math.random() - 0.5) * 0.1;
+    velocities[i * 3 + 1] = Math.random() * 0.2 + 0.1;
+    velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.1;
+    lifetimes[i] = Math.random() * 0.5 + 0.3;
+    startColors[i * 4] = 1.0;
+    startColors[i * 4 + 1] = 0.5;
+    startColors[i * 4 + 2] = 0.0;
+    startColors[i * 4 + 3] = 1.0;
+    endColors[i * 4] = 1.0;
+    endColors[i * 4 + 1] = 0.2;
+    endColors[i * 4 + 2] = 0.0;
+    endColors[i * 4 + 3] = 0.0;
+}
+
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+const velocityBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, velocityBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, velocities, gl.STATIC_DRAW);
+
+const lifetimeBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, lifetimeBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, lifetimes, gl.STATIC_DRAW);
+
+const startColorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, startColorBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, startColors, gl.STATIC_DRAW);
+
+const endColorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, endColorBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, endColors, gl.STATIC_DRAW);
+
+// 大きな炎用のパーティクルシステムを準備
+const largeNumParticles = 5000;
+const largePositions = new Float32Array(largeNumParticles * 3);
+const largeVelocities = new Float32Array(largeNumParticles * 3);
+const largeLifetimes = new Float32Array(largeNumParticles);
+const largeStartColors = new Float32Array(largeNumParticles * 4);
+const largeEndColors = new Float32Array(largeNumParticles * 4);
+
+for (let i = 0; i < largeNumParticles; i++) {
+    largePositions[i * 3] = (Math.random() - 0.5) * 0.4;
+    largePositions[i * 3 + 1] = -0.5;
+    largePositions[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
+    largeVelocities[i * 3] = (Math.random() - 0.5) * 0.2;
+    largeVelocities[i * 3 + 1] = Math.random() * 0.4 + 0.2;
+    largeVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
+    largeLifetimes[i] = Math.random() * 1.0 + 0.5;
+    largeStartColors[i * 4] = 1.0;
+    largeStartColors[i * 4 + 1] = 0.5;
+    largeStartColors[i * 4 + 2] = 0.0;
+    largeStartColors[i * 4 + 3] = 1.0;
+    largeEndColors[i * 4] = 1.0;
+    largeEndColors[i * 4 + 1] = 0.2;
+    largeEndColors[i * 4 + 2] = 0.0;
+    largeEndColors[i * 4 + 3] = 0.0;
+}
+
+const largePositionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, largePositionBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, largePositions, gl.STATIC_DRAW);
+
+const largeVelocityBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, largeVelocityBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, largeVelocities, gl.STATIC_DRAW);
+
+const largeLifetimeBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, largeLifetimeBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, largeLifetimes, gl.STATIC_DRAW);
+
+const largeStartColorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, largeStartColorBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, largeStartColors, gl.STATIC_DRAW);
+
+const largeEndColorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, largeEndColorBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, largeEndColors, gl.STATIC_DRAW);
+
+// カメラの位置を管理する変数
+let cameraPosition = [1, 1, 2]; // カメラの位置を斜め上に設定
+
+// カメラのターゲットとアップベクトル
+const targetPosition = [0, 0, 0];
+const upVector = [0, 1, 0];
+
+// カメラの視点を斜めにするためのビュー行列の計算関数
+function createViewMatrix(eye, target, up) {
+    const zAxis = normalize(subtractVectors(eye, target));
+    const xAxis = normalize(cross(up, zAxis));
+    const yAxis = cross(zAxis, xAxis);
+
+    return new Float32Array([
+        xAxis[0], xAxis[1], xAxis[2], 0,
+        yAxis[0], yAxis[1], yAxis[2], 0,
+        zAxis[0], zAxis[1], zAxis[2], 0,
+        -dot(xAxis, eye), -dot(yAxis, eye), -dot(zAxis, eye), 1,
+    ]);
+}
+
+// 単位行列を作成
+function createIdentityMatrix() {
+    return new Float32Array([
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ]);
+}
+
+// パースペクティブ投影行列の作成
+function createPerspectiveMatrix(fov, aspect, near, far) {
+    const f = 1.0 / Math.tan(fov / 2);
+    const rangeInv = 1.0 / (near - far);
+
+    return new Float32Array([
+        f / aspect, 0, 0, 0,
+        0, f, 0, 0,
+        0, 0, (near + far) * rangeInv, -1,
+        0, 0, near * far * rangeInv * 2, 0
+    ]);
+}
+
+function subtractVectors(a, b) {
+    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+}
+
+function normalize(v) {
+    const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    return [v[0] / length, v[1] / length, v[2] / length];
+}
+
+function cross(a, b) {
+    return [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]
+    ];
+}
+
+function dot(a, b) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
+const projectionMatrix = createPerspectiveMatrix(Math.PI / 4, canvas.width / canvas.height, 0.1, 10);
+const viewMatrix = createViewMatrix(cameraPosition, targetPosition, upVector);
+
+const firePositions = [];
+for (let i = 0; i < 10; i++) {
+    firePositions.push([
+        (Math.random() - 0.5) * 2, // x
+        2 + Math.random() * 2, // y 初期位置を上に設定
+        (Math.random() - 0.5) * 2  // z
+    ]);
+}
+
+function render(time) {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.useProgram(program);
+    gl.uniformMatrix4fv(uProjectionLocation, false, projectionMatrix);
+    gl.uniformMatrix4fv(uViewLocation, false, viewMatrix);
+    gl.uniform1f(uTimeLocation, time * 0.001);
+
+    gl.enableVertexAttribArray(aPositionLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.vertexAttribPointer(aPositionLocation, 3, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(aVelocityLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, velocityBuffer);
+    gl.vertexAttribPointer(aVelocityLocation, 3, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(aLifetimeLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, lifetimeBuffer);
+    gl.vertexAttribPointer(aLifetimeLocation, 1, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(aStartColorLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, startColorBuffer);
+    gl.vertexAttribPointer(aStartColorLocation, 4, gl.FLOAT, false, 0, 0);
+
+    gl.enableVertexAttribArray(aEndColorLocation);
+    gl.bindBuffer(gl.ARRAY_BUFFER, endColorBuffer);
+    gl.vertexAttribPointer(aEndColorLocation, 4, gl.FLOAT, false, 0, 0);
+
+    // 各炎の位置にパーティクルシステムを描画
+    for (let i = 0; i < firePositions.length; i++) {
+        const offset = firePositions[i];
+        // 時間とともにy座標を減少させる
+        offset[1] -= 0.01; // 降下速度を調整
+        // y座標が-1より小さくなったら再び上に戻す
+        if (offset[1] < -1) {
+            offset[1] = 2 + Math.random() * 2;
+        }
+        gl.uniform3fv(uOffsetLocation, offset);
+        gl.drawArrays(gl.POINTS, 0, numParticles);
+    }
+
+    // 中央の大きな炎を描画（円を描くように移動）
+    const radius = 0.5;
+    const centerX = 0.0;
+    const centerY = -0.5;
+    const centerZ = 0.0;
+    const angle = time * 0.001; // 時間に基づいて角度を計算
+    const largeOffset = [
+        centerX + radius * Math.cos(angle), 
+        centerY,
+        centerZ + radius * Math.sin(angle)
+    ];
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, largePositionBuffer);
+    gl.vertexAttribPointer(aPositionLocation, 3, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, largeVelocityBuffer);
+    gl.vertexAttribPointer(aVelocityLocation, 3, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, largeLifetimeBuffer);
+    gl.vertexAttribPointer(aLifetimeLocation, 1, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, largeStartColorBuffer);
+    gl.vertexAttribPointer(aStartColorLocation, 4, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, largeEndColorBuffer);
+    gl.vertexAttribPointer(aEndColorLocation, 4, gl.FLOAT, false, 0, 0);
+
+    gl.uniform3fv(uOffsetLocation, largeOffset);
+    gl.drawArrays(gl.POINTS, 0, largeNumParticles);
+
+    requestAnimationFrame(render);
+}
+
+gl.clearColor(0, 0, 0, 1);
+render();
+</script>
+</html>
