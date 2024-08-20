@@ -43,17 +43,6 @@ const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
 function initShaderProgram(gl, vsSource, fsSource) {
     const vertexShader = compileShader(gl, vsSource, gl.VERTEX_SHADER);
     const fragmentShader = compileShader(gl, fsSource, gl.FRAGMENT_SHADER);
-
-    const shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram, vertexShader);
-    gl.attachShader(shaderProgram, fragmentShader);
-    gl.linkProgram(shaderProgram);
-
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        console.error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
-        return null;
-    }
-    return shaderProgram;
 }
 
 

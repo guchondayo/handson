@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere</title>
+    <link rel="stylesheet" href="chrome.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<script type="text/javascript">
+// canvasとglを宣言する
+ const canvas = document.getElementById('glCanvas');
+ const gl = canvas.getContext('webgl');
+ if(!gl){
+    alert("WEBGLが読み取れませんでした!")
+    console.error('WEBGLが読み取れませんでした')
+ }
+ // 1.shaderのソースを作る
+ const starShaderSources = {
+    vertex: `attribute vec3 aPosition;
+    void main(void) {
+        gl_Position = vec4(aPosition, 1.0); // 修正: aPositionを使ってgl_Positionを設定
+    }`,
+    fragment: `
+    void main(void){
+        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0); // 修正: 黄色のパーティクルの色を設定
+    }`
+};
+
+const fireShaderSources = {
+    vertex: `attribute vec3 aPosition;
+    void main(void) {
+        gl_Position = vec4(aPosition, 1.0); // 修正: aPositionを使ってgl_Positionを設定
+    }`,
+    fragment: `
+    void main(void){
+        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0); // 修正: 黄色のパーティクルの色を設定
+    }`
+};
+  // 2.shaderのソースを作る(というよりこれはシェーダープログラムを作っているのである)
+    const functionToMakeShader = (source) =>{
+        const { vertex, fragment } = source
+        // 1.まずは空のシェーダーを作成する
+        // 今の状態は、シェーダが全く存在していない
+        // シェーダはいろんな種類があるよ
+        const firstlyIMakeEmptyVertexShader = gl.createShader(gl.VERTEX_SHADER);
+        const firstlyIMakeEmptyFragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        // 2.シェーダとソースとして認めて入れる
+        // 今の状態は、シェーダーのソースがただの文字列になっておる
+        // 今の状態は、空のシェーダーと文字列が紐づいていない
+        // 空のシェーダーが最初でソースが後ろにあります。
+        gl.shaderSource(firstlyIMakeEmptyVertexShader,vertex);
+        gl.shaderSource(firstlyIMakeEmptyFragmentShader,fragment);
+        // 3.GPUに翻訳できるようにコンパイルする
+        // 今の状態は、シェーダーのソースが紐づいているシェーダが存在している
+        // 今の状態は、GPUが読めないただの英語でできている
+        gl.compileShader(firstlyIMakeEmptyVertexShader);
+        gl.compileShader(firstlyIMakeEmptyFragmentShader);
+        // ******ここで、シェーダーのソースコードがGPUで実行可能な機械語に変換されます。*****************************
+        // 今のままだとシェーダを紐づけただけだから、シェーダソース以外のデータを入力できない。
+        // それ以上それ以下でもない、JSからシェーダを通すときに、人間側の入力を制御するっていうイメージかな
+        return shaderWoTsukuttanodeJskaraShaderWoSeijyosuruKansuuWoTsukurimasu(firstlyIMakeEmptyVertexShader,firstlyIMakeEmptyFragmentShader)
+    } 
+    const shaderWoTsukuttanodeJskaraShaderWoSeijyosuruKansuuWoTsukurimasu =(vertex,fragment)=>{
+        // 1.まずは空のプログラムを作成する
+        // 今の状態は、GPUでシェーダが読み取れるだけなので、今度はJSとシェーダをリンクする  
+        const shaderProgram = gl.createProgram();
+        // 今の状態は、vertexとfragmentが完全に独立しているのでattachでくっつけてしまう     
+        gl.attachShader(shaderProgram,vertex)
+        gl.attachShader(shaderProgram,fragment)
+        // リンクして初めて役に立つシェーダーとなる
+        gl.linkProgram(shaderProgram);
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            console.error('Unable to link the shader program:', gl.getProgramInfoLog(shaderProgram));
+            return null;
+        }
+        gl.useProgram(shaderProgram)
+        return shaderProgram
+    }
+      // 3.バッファを作成する（オブジェクトをそのものの作成）
+    //   1.配列を作る
+      // 今の状態は、画面上に存在していません。オブジェクトの中心を（0.0.0）として作りましょう。
+      const fire = new Float32Array([
+        0.1,0.1,0.1
+      ])
+      // 3.バッファを作成する（オブジェクトをそのものの作成
+      // 今の状態は、まだ配列を作っているだけ
+      // 空のバッファを作成すること
+     const buffer = gl.createBuffer();
+
+     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+     gl.bufferData(gl.ARRAY_BUFFER, fire, gl.STATIC_DRAW);
+    //  ***あとでやる***
+    //  バインドが必要な理由
+    // 1.bindされたバッファーとバッファーデータが送信される
+    // ??bufferDataの引数の中にバッファー本体を流し込めればいいのにね
+    //   const buffer1 = gl.createBuffer();
+    //   const buffer2 = gl.createBuffer();
+
+    // // buffer1をバインドしてデータを送信
+    // gl.bindBuffer(gl.ARRAY_BUFFER, buffer1);
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0.0, 0.0, 0.0]), gl.STATIC_DRAW);
+
+    // // buffer2をバインドしてデータを送信
+    // gl.bindBuffer(gl.ARRAY_BUFFER, buffer2);
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1.0, 1.0, 1.0]), gl.STATIC_DRAW);
+    // *ここで大事なのは、バッファはバインドで狙いを定めてバッファデータで飛ばす
+    // ⇒なので、ここは式だけ関数にして、バッファを流し込む式を作って、あとは返却しておけばもうばっちり
+
+    // 属性の設定　
+    // ＊バッファをいつでもバインドできるようにしておくことが大事
+    // バッファーーシェーダーーシェーダの属性（シェーダ内）がまだりんくしていない状態
+    // これでついにシェーダに書かれている引数がやっとJSで使えるようになりました。
+    // ＊＊この作業でやっとシェーダプログラムが必要になってくるんです。
+    // <重要>オブジェクトの位置を変更する方法
+    // 1.バッファー値を変更してバインドしなおす
+    // 2.シェーダをいじる
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    const positionLocation = gl.getAttribLocation(shaderProgram, 'aPosition');
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+
+//     たとえばaPositionとかであったらaPositionがシェーダ1のバッファを参照していますよ。というのを紐づけるためにやっているってこと？
+
+// 異なるシェーダがaPositionというのがあった場合、かぶらないようにするってことか
+const numVertices = fire.length / 3;
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.POINTS, 0, numVertices);
+
+    // 描画コマンドを発行
+    // 第一引数が大事。描画の仕方についてここでモードとして記載されている
+
+
+
+
+
+
+</script>
+<style>
+    #glCanvas{
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+    }
+</style>
+</body>
+</html>

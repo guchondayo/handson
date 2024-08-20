@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere</title>
+    <link rel="stylesheet" href="chrome.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<script>
+    // シェーダの書き方について
+    // https://www.khronos.org/opengles/sdk/docs/manglsl/docbook4/
+
+    // １問目：WEBGLの設定をしてみてください
+    const canvas = document.getElementById('glCanvas');
+    const gl = canvas.getContext('webgl');
+    if(!gl){
+        console.error('失敗しました');
+        alert('失敗しました')
+    }
+    // 2問目：WEBGLのサイズとJSのビューポートを調整してみてください
+    // Canvasのサイズを設定
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // ビューポートの設定
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    
+
+    // 3問目：頂点シェーダのソースコードを作ってください。
+    // 3問目おまけ：定義方法を3つ答えてください
+    // ⇒attribute:頂点にかかわるもの
+    // ⇒uniform:時間など、全体にかかわるもの
+    // ⇒vary:頂点⇒フラグメントに渡すためのもの
+    // 頂点色属性を有効にし、データを設定（頂点のバッファに混ぜておく）
+    // gl.vertexAttribPointer(colorLocation, 4, gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+    // gl.enableVertexAttribArray(colorLocation);
+    // 頂点はゴールでフラグメントはその間の過程はどうするか、どの頂点の色が赤かとか黄色とか書かれていないとわからないっちゅうことね
+    // 4問目：属性の読み方ついて左からなんという？。
+    // ⇒変数/型/変数名（属性というファイルに書いておいたのでしっかり勉強しておくこと）
+    // 5問目：gl_の書き方の定義について教えてください？。
+    // ⇒gl_の後は基本的に大文字
+    // 6問目：Wだけは固定したいので、Wを固定してください。
+    const vertexSourceCode = `
+    attribute vec3 a_position; // 頂点の位置 (vec3 型)
+    void main(void) {
+        gl_Position = vec4(a_position, 1.0); // vec3 を vec4 に変換して gl_Position に設定
+        gl_PointSize = 10.0; // 点のサイズを設定
+    }
+`;
+    // const vertexSourceCode = `
+    //     attribute vec4 a_position;
+    //     void main(void){
+    //     gl_Position = a_position;
+    //     }
+    // `
+    // 7問目：フラグメントシェーダを作ってみてください。
+    const fragmentSourceCode = `
+    void main(void){
+         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // 赤色で描画
+    }
+    `;
+    // 8問目:varingをつかって頂点ごとの色を指定してみてください。
+    // 9問目：空のシェーダを作ってください。
+    // 10問目：シェーダを作成するのにやるべき順番
+    // シェーダー本体・シェーダーソース・プログラムを作る・コンパイル・アタッチ・リンク・有効
+    // 11問目：プログラムとシェーダの違いを説明してください
+    // １プログラムに対してフラグメントシェーダと頂点シェーダがある。プログラムがないと属性の登録ができない。
+    // 12問目：シェーダに引数を代入するのはなぜ？
+    // ⇒頂点シェーダとフラグメントシェーダを区別するため
+    const VertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(VertexShader,vertexSourceCode);
+    gl.compileShader(VertexShader);
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader,fragmentSourceCode)
+    gl.compileShader(fragmentShader);
+    
+    const program = gl.createProgram();
+    gl.attachShader(program, VertexShader)
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    gl.useProgram(program);
+
+    // エラーチェック（オプションですが推奨）
+    if (!gl.getShaderParameter(VertexShader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(VertexShader));
+    }
+
+    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(fragmentShader));
+    }
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error(gl.getProgramInfoLog(program));
+    }
+
+    // 12問目：バッファーを作ってください。
+    const bufferArray = new Float32Array([
+        0.0, 0.0, 0.0  // 描画する点の座標
+    ])
+
+    // 13問目　バッファそのものをぜひ作成してみてください。
+    const buffer = gl.createBuffer();
+    // 14問目　バッファをバインドしてみてください。
+    // ⇒ヒント、バッファにもいろいろな種類がある]
+     //15問目　バッファのデータを流し込んでみてください。
+    // ⇒ヒント、バッファにもいろいろな種類がある
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, bufferArray, gl.STATIC_DRAW);
+    //問14 属性を使ってシェーダのリンクをしてみてください。（a_positionを登録してみよう）
+    const a_position = gl.getAttribLocation(program, 'a_position');
+    console.log(a_position)
+    // ⇒ここは-1になると失敗
+    gl.enableVertexAttribArray(a_position);
+    gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 0, 0);
+
+    //問15 描画してみてください。
+    //問16 描画するときのながれを教えてください
+    // 1.消す2.描画する
+    // 1.動き⇒座標を変えて再描画し続ける
+    // 2.キープ⇒クリアして座標を変えないで再描画
+    // 3.途中で消える⇒settimeoutやrequestAnimateFrameで制御し続ける
+
+    gl.drawArrays(gl.POINTS, 0, 1); // モードをPOINTSに設定し、1つの頂点を描画
+//     問17　第一引数にタイプ/第二引数
+//     配列 [a, b, c] の場合、a がインデックス0、b がインデックス1、c がインデックス2になります。
+    // WebGLでも、例えばgl.drawArrays()を使う際の開始インデックスも通常0から指定します。
+
+
+//     頂点数 (count) は、gl.drawArrays() や gl.drawElements() などの描画コマンドにおいて、描画する頂点の数を指定します。この数値を変更すると、以下のように描画結果が変わります。
+
+// 1. 少ない頂点数を指定する場合
+// 例: count = 1 とした場合
+// 描画されるのは1つの頂点のみです。もし描画モードが gl.POINTS であれば、1つの点が描画されますが、モードが gl.TRIANGLES などの場合は、図形が完成しないので何も表示されないか、部分的に表示されます。
+// 2. 多い頂点数を指定する場合
+// 例: count = 3 とした場合（gl.TRIANGLES を使用）
+// 三角形を構成する3つの頂点が描画され、1つの三角形が描かれます。
+// さらに頂点数を増やすと、描画される形状が変わり、複数の三角形やポリゴンが描かれることになります。
+// 3. 頂点数がデータよりも多い場合
+// 指定した count が、バッファ内の頂点数を超えている場合、描画される結果は未定義で、エラーが発生する可能性があります。また、誤ったデータが描画されることもあります。
+    
+// 問18　第3引数は何を表しているの？
+// 画面に表示される頂点の数ってことね
+
+    
+    
+
+
+</script>
+<style>
+    #glCanvas{
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+    }
+</style>
+</body>
+</html>
