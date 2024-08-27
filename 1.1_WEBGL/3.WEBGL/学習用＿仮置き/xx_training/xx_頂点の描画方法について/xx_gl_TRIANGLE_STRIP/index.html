@@ -59,8 +59,9 @@
 
     // -1.0~1.0まで？
     const bufferArrays = new Float32Array([
-        0.0,0.0,0.0,
-        0.01,0.1,0.1
+        0.0, 0.5, 0.0,  // 頂点1
+        -0.5, -0.5, 0.0, // 頂点2
+        0.5, -0.5, 0.0  // 頂点3
     ]);
     const buffer = gl.createBuffer(gl.ARRAY_BUFFER);
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
@@ -71,7 +72,7 @@
     gl.vertexAttribPointer(a_position,3,gl.FLOAT,false,0,0)
     // DrawArraysの内容はモードスタートの頂点使う頂点
     // 1.モードは毎回切り替えてね、スタートは大体ゼロ、頂点の数は基本変えない
-    gl.drawArrays(gl.POINTS, 0, 2);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 3);
     //     const indices = new Uint16Array([0, 1, 2, 2, 3, 0]);
     // const indexBuffer = gl.createBuffer();
     // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -100,7 +101,6 @@
     // 例）１秒後に偶数のバッファを消す実装
 
     // ☆第一引数のGL_POINTにつかいわけについて
-    
 </script>
 <style>
     #glCanvas{

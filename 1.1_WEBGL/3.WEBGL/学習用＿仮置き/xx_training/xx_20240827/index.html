@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Draw Modes</title>
+    <style>
+        #glCanvas {
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('glCanvas');
+    const gl = canvas.getContext('webgl');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    gl.viewport(0, 0, canvas.width, canvas.height);
+
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    const vertexShaderSource = `
+        attribute vec3 a_position;
+        uniform float a_size;
+        uniform mat4 u_matrix;
+        uniform mat4 u_view;
+        uniform mat4 u_projection;
+
+        void main(void) {
+            gl_Position = vec4(a_position, 1.0);
+            gl_PointSize = a_size;
+        }
+    `;
+    gl.shaderSource(vertexShader, vertexShaderSource);
+    gl.compileShader(vertexShader);
+
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    const fragmentSource = `
+        void main(void) {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);        
+        }
+    `;
+    gl.shaderSource(fragmentShader, fragmentSource);
+    gl.compileShader(fragmentShader);
+
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
+
+    const vertexBuffer = gl.createBuffer();
+    const vertexArray = new Float32Array([
+        0.1, 0.0, 0.0,
+        0.0, 0.1, 0.0,
+        0.0, 0.0, 0.1,
+        0.0, 0.1, 0.0,
+        0.1, 0.0, 0.1,
+        0.0, 0.1, 0.0,
+        0.1, 0.0, 0.0,
+        0.0, 0.0, 0.1,
+    ]);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertexArray, gl.STATIC_DRAW);
+
+    const a_position = gl.getAttribLocation(shaderProgram, 'a_position');
+    gl.enableVertexAttribArray(a_position);
+    gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 0, 0);
+
+    const a_size = gl.getUniformLocation(shaderProgram, 'a_size');
+    gl.uniform1f(a_size, 10.0);
+
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.POINTS, 0, 8);
+</script>
+</body>
+</html>

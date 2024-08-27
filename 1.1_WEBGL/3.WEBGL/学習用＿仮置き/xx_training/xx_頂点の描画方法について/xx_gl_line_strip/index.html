@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Triangle</title>
+    <link rel="stylesheet" href="chrome.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<script>
+// 問一：CSSとキャンバスとViewPort,それぞれの因果関係を答えてください。
+    const canvas = document.getElementById('glCanvas');
+    const gl = canvas.getContext('webgl');
+
+    // CSSでキャンバスのサイズを100%に設定し、画面全体に広げています。
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // ビューポートはキャンバスの描画領域を指定します。
+    // この例では、キャンバス全体を使って描画するように設定しています。
+    gl.viewport(0, 0, canvas.width, canvas.height);
+
+// 頂点シェーダーの定義
+    const VertexShader = gl.createShader(gl.VERTEX_SHADER);
+    const VertexShaderCode = `
+    attribute vec3 a_position; // 3D空間の位置を表す属性
+    void main(void) {
+        gl_Position = vec4(a_position, 1.0); // 位置をクリップ空間に設定
+        gl_PointSize = 10.0; // 点を描画する場合のサイズ
+    }
+`;
+    gl.shaderSource(VertexShader, VertexShaderCode);
+    gl.compileShader(VertexShader);
+
+// フラグメントシェーダーの定義
+    const FragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    const FragmentShaderCode = `
+    void main(void) {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); // 白色
+    }
+    `;
+    gl.shaderSource(FragmentShader, FragmentShaderCode);
+    gl.compileShader(FragmentShader);
+
+// シェーダープログラムの作成とリンク
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, VertexShader);
+    gl.attachShader(shaderProgram, FragmentShader);
+    gl.linkProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
+
+// エラーチェック（推奨）
+    if (!gl.getShaderParameter(VertexShader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(VertexShader));
+    }
+
+    if (!gl.getShaderParameter(FragmentShader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(FragmentShader));
+    }
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        console.error(gl.getProgramInfoLog(shaderProgram));
+    }
+
+// 三角形の頂点データの設定
+    const bufferArrays = new Float32Array([
+        0.0, 0.5, 0.0,  // 頂点1
+        -0.5, -0.5, 0.0, // 頂点2
+        0.5, -0.5, 0.0  // 頂点3
+    ]);
+
+    // 頂点バッファを作成してデータをバインド
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, bufferArrays, gl.STATIC_DRAW);
+
+// 頂点属性を設定
+    const a_position = gl.getAttribLocation(shaderProgram, 'a_position');
+    gl.enableVertexAttribArray(a_position);
+    gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 0, 0);
+
+// 三角形の描画
+    gl.clearColor(0.0, 0.0, 0.0, 1.0); // 背景を黒に設定
+    gl.clear(gl.COLOR_BUFFER_BIT); // カラーバッファをクリア
+
+    gl.drawArrays(gl.LINE_STRIP, 0, 3);
+</script>
+<style>
+    #glCanvas {
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+    }
+</style>
+</body>
+</html>

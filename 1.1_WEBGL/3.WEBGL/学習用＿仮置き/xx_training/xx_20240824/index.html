@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Draw Modes</title>
+    <style>
+        #glCanvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<script>
+    // 共通の初期化コード
+    const canvas = document.getElementById('glCanvas');
+    const gl = canvas.getContext('webgl');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+    // 頂点シェーダー
+    const vsSource = `
+        attribute vec2 a_position;
+        void main(void) {
+            gl_Position = vec4(a_position, 0.0, 1.0);
+            gl_PointSize = 10.0;  // 点のサイズを指定
+        }
+    `;
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, vsSource);
+    gl.compileShader(vertexShader);
+
+    // フラグメントシェーダー
+    const fsSource = `
+        void main(void) {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);  // 白色
+        }
+    `;
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader, fsSource);
+    gl.compileShader(fragmentShader);
+
+    // シェーダープログラムのリンク
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
+
+    // 頂点データ
+    const vertices = new Float32Array([
+        0.0,  0.5,  // 頂点1
+       -0.5, -0.5,  // 頂点2
+        0.5, -0.5,  // 頂点3
+        -1.0,  0.5, // 頂点4（追加）
+    ]);
+
+    // バッファの設定
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    // 頂点属性の設定
+    const a_position = gl.getAttribLocation(shaderProgram, 'a_position');
+    gl.enableVertexAttribArray(a_position);
+    gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 0, 0);
+//     属性（Attributes）
+// 特徴: 各頂点ごとに異なるデータ（例: 頂点の位置、色、テクスチャ座標など）をシェーダープログラムに渡します。
+// 変更可能性: 描画のたびに異なるデータを渡すことができます。たとえば、異なる形状や位置の頂点を描画する場合に、属性データを変更します。
+// ユニフォーム（Uniforms）
+// 特徴: シェーダープログラム全体で共有される定数値です。すべての頂点やフラグメントで同じ値を使用します（例: ライトの位置、色、変換行列など）。
+// 変更可能性: 描画のたびにユニフォームの値を変更できます。たとえば、ライトの位置を動かしたり、ビュー変換行列を更新したりする際にユニフォームの値を変更します。
+// それ以外のケース
+// 定数（Constants）: シェーダープログラム内で固定された値であり、JavaScriptから変更することはできません。
+// varying 変数: 頂点シェーダーからフラグメントシェーダーにデータを渡すために使われますが、JavaScriptから直接操作することはできません。varying変数は頂点シェーダーによって設定され、フラグメントシェーダーでその値を受け取ります。
+// JavaScriptからシェーダープログラムにデータを渡せるもの
+
+
+// 1.属性（Attributes）：オブジェクトをシェーダに渡すときに使われる
+// ⇒バッファをシェーダにわたす
+// ＊毎回バインドして飛ばす
+// 2.ユニフォーム：シェーダー全体の設定にかかわる
+// ⇒直接値を代入できる
+// JavaScriptからシェーダープログラムにデータを渡せないもの
+// 1.定数（Constants）：シェーダ内で使うただの変数
+// 2.varying 変数: 頂点シェーダーからフラグメントシェーダーにデータを渡：シェーダー全体の設定にかかわる
+
+// この４つの使用例をつくってくんない？
+</script>
+</body>
+</html>

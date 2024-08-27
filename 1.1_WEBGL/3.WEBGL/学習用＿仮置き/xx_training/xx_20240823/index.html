@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere</title>
+    <link rel="stylesheet" href="chrome.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<script>
+ const canvas = document.getElementById('glCanvas');
+ 
+ const gl = canvas.getContext('webgl');
+    if(!gl){
+        console.error('コンソールが受け取れてないんだけど？')
+    }
+
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight;
+ gl.viewport(0,0,canvas.width,canvas.height);
+ // PositionSizeと書きたくなるが、点のサイズなので『PointSize』と書きましょう。
+const verticalData = `
+    attribute vec3 a_position;
+    void main (void) {
+        gl_Position = vec4(a_position,1.0);
+        gl_PointSize = 20.0;
+    }
+`
+// glを入れるのを忘れないようにしよう
+const vertical = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vertical,verticalData);
+gl.compileShader(vertical);
+//　fragはVec4だよ
+const fragmentData = `
+    void main (void){
+        gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+    }
+`
+
+const fragment = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fragment,fragmentData);
+gl.compileShader(fragment);
+
+// 以下は基本はプログラムのことを書いているので、間違えないようにしよう
+const program = gl.createProgram();
+gl.attachShader(program, vertical);
+gl.attachShader(program, fragment);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+const buffer = gl.createBuffer();
+const bufferArrays = new Float32Array([
+0.5, 0.5, 0.0,  // 一つ目の点
+-0.5, -0.5, 0.0 // 二つ目の点
+])
+// gl.bufferArrayだよ。gl.ArrayBufferってなに
+// buffer敬の最初はARRAYから始まるよ！bufferとbufferってわがままだから一緒にいたくない
+// だからバインドしてから間接的にデータを飛ばす
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.bufferData(gl.ARRAY_BUFFER, bufferArrays, gl.STATIC_DRAW);
+// ☆☆：以下の書き方はユニフォーム/頂点でやり方がちがい、varingに関しては書く必要がない
+// gl.ARRAY_BUFFERが必要な理由
+// 1.配列が点や線を書くために存在しているのか
+// 2.またはビュー行列やプロジェクション行列を表しているのか
+// 3.ユニフォームに使う配列は何なのか
+// ⇒配列はどういう意味？ということ
+//　実は座標はマックスが1である
+
+// 似ているけど若干違うのが
+    // gl.drawArraysとか。これは、線を書くか、点を書くかである
+
+// 問1：属性を作ろう(プログラムから属性の位置を取得しよう)
+const a_position = gl.getAttribLocation(program, 'a_position');
+// 問2：順番について教えてください。ロケを取得⇒頂点属性配列を有効化⇒頂点属性ポインタで指導してあげる
+gl.enableVertexAttribArray(a_position);
+// 問3：指定された属性、配列の中身（XYだったら2、XYZだったら3、XYZWだったら4）、ああとは,false、0，0でええやろ
+gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 0, 0);              
+// ぐち：てかさ。バッファってメンドクサイよね。毎回バインドして送信するくらいだったら、バインド送信有効化を一括でできるglのメンバーが存在してもいいと思わない？愚痴だけど
+
+gl.drawArrays(gl.POINTS,0,2);
+
+</script>
+<style>
+    #glCanvas{
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+    }
+</style>
+</body>
+</html>
