@@ -1,0 +1,97 @@
+シェーディングモデルの基本要素
+環境光 (Ambient Light)
+
+役割: シーン全体に均等に照らされる光。オブジェクトがどこにあっても一定の明るさを提供します。
+計算: 環境光の強さ（ambientLight）とオブジェクトの環境光反射率（ambient）の積で表現されます。
+式:
+ambient
+=
+ambientLight
+×
+ambientMaterial
+ambient=ambientLight×ambientMaterial
+方向光 (Directional Light)
+
+役割: 特定の方向からの光で、影や明るさの変化をもたらします。通常、太陽光などの一方向からの光を模擬します。
+計算: 法線ベクトル（オブジェクトの表面の向き）と光の方向ベクトルのドット積を使って、光の強さを計算します。ドット積の結果は、光が表面に対してどれだけ直角に当たっているかを示します。
+式:
+diffuse
+=
+directionalLightColor
+×
+max
+⁡
+(
+dot
+(
+transformedNormal
+,
+directionalVector
+)
+,
+0.0
+)
+diffuse=directionalLightColor×max(dot(transformedNormal,directionalVector),0.0)
+鏡面反射 (Specular Reflection)
+
+役割: 光が表面で反射し、鏡のような反射光を表現します。光源が観察者の方向に向かって反射する部分が強調されます。
+計算: 視線ベクトルと反射ベクトルのドット積を計算し、これを指定された鏡面反射強度で調整します。
+式:
+specular
+=
+specularLightColor
+×
+pow
+(
+max
+⁡
+(
+dot
+(
+viewDirection
+,
+reflectDirection
+)
+,
+0.0
+)
+,
+shininess
+)
+specular=specularLightColor×pow(max(dot(viewDirection,reflectDirection),0.0),shininess)
+最終的なカラー
+
+役割: 環境光、方向光、および鏡面反射の結果を合成して最終的なカラーを決定します。
+式:
+finalColor
+=
+ambient
++
+diffuse
++
+specular
+finalColor=ambient+diffuse+specular
+実際のシェーダーコードでの計算
+頂点シェーダー
+頂点シェーダーでは、各頂点の位置や法線ベクトルを変換して、フラグメントシェーダーに必要なデータを渡します。
+
+glsl
+コードをコピーする
+attribute vec4 aVertexPosition;
+attribute vec3 aVertexNormal;
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+uniform mat4 uNormalMatrix;
+varying highp vec3 vLighting;
+
+void main(void) {
+    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+
+    highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
+    highp vec3 directionalLightColor = vec3(1, 1, 1);
+    highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+    highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
+    highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
+    
+    vLighting = ambientLight + (directionalLightColor * directional);
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere with Phong Shading</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<style>
+    #glCanvas {
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+    }
+</style>
+<script>
+// #.事前準備をしましょう。
+// 本来ではタグ/CSSやJSだけで映像は作れるんだ（今度やってみる）
+// けど、3Dとかって影の計算とか、カメラの角度とか『計算』が多いので、CANVASをつかって
+// 代わりに計算するイメージ。
+// そしてWEBGLはオブジェクトです。そしてたくさんのツールを隠し持っています。
+const canvas = document.getElementById("glCanvas");
+const gl = canvas.getContext('webgl');
+
+if(!canvas){
+    console.error("CANVASが読み取れていません")
+};
+if(!gl){
+    console.error("WEBGLが読み取れていません")
+};
+// 頂点/フラグメントシェーダを作る
+// 頂点に対する『共通の計算』
+// フラグメントに対する『共通の計算』
+// シェーダを作成して、ソースコードをくっつけてGPUに翻訳する。
+//　シェーダは自分で何者か伝えるし、ソースコード君とも協調性がある。
+// だからめんどくさいやつではないんだ
+// ***********************************************************************************
+function toMakeShader(type,sourceCode){
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader,sourceCode);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        return
+    }
+    return shader
+}
+const myVertexSourceCode = `
+    attribute vec3 a_position;
+    uniform float u_size;
+    uniform mat4 mat_projectionMatrix;
+    uniform mat4 mat_viewMatrix;
+    uniform mat4 mat_modelMatrix;
+    attribute vec4 a_color;
+    varying vec4 v_color;  // フラグメントシェーダーに渡すための varying 変数
+    void main(void){
+        gl_Position = mat_projectionMatrix * mat_viewMatrix * mat_modelMatrix * vec4(a_position,1.0);
+        gl_PointSize = u_size;
+        v_color = a_color;
+    } 
+`
+const myFragmentSourceCode = `
+  precision mediump float;
+  varying vec4 v_color;  // 頂点シェーダーから受け取る varying 変数
+  void main(void){
+    gl_FragColor = v_color;  // フラグメントカラーを設定
+  }
+`
+const myVertexShader = toMakeShader(gl.VERTEX_SHADER,myVertexSourceCode);
+const myFragmentShader = toMakeShader(gl.FRAGMENT_SHADER,myFragmentSourceCode);
+// ***********************************************************************************
+// プログラムをつくる
+// 実はシェーダを作っただけじゃ何も役に立たない
+// 頂点とフラグメントを足したプログラムを使って初めてさっき設定した『a_position』とかの値に代入することができる
+// プログラムは１種類だからね
+function toMakeProgram(vertexShader,fragmentShader){
+    const program = gl.createProgram();
+    gl.attachShader(program,vertexShader);
+    gl.attachShader(program,fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error('Program link error:', gl.getProgramInfoLog(program));
+        return null;
+    }
+    gl.useProgram(program); 
+    return program   
+};
+const myProgram = toMakeProgram(myVertexShader,myFragmentShader);
+
+// ***********************************************************************************
+// バッファを作る
+// WEBGLの書き方はとにもかくにも頂点を作ってナンボなんです。
+//　そこから点を書くのか、つなげて書くのか、『書き方はdrawArrayやdrawElementで後述します』
+//　コツ：バッファはめんどくさいおとこ、データとバッファは交わらない、察してほしい
+// コツ：インデックス以外は毎回enableを使います。インデックスは一回でいいです
+// コツ：インデックス以外は32ビットフロートでインデックスは16イントです。
+//　コツ：334
+function toMakeBufferAndSetupVertexVariable(program,ArrayType,bufferArray,variable,xyzOrRgba){
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(ArrayType,buffer);
+    gl.bufferData(ArrayType,new Float32Array(bufferArray),gl.STATIC_DRAW);
+    const location = gl.getAttribLocation(program, variable);
+    gl.vertexAttribPointer(location, xyzOrRgba, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(location)
+    return buffer
+};
+// モデルだけ複数だよ
+function toMakeModelMatrix(){
+    const matrix = mat4.create();
+    const translateXYZ = [0.1,0.1,0.1];
+    mat4.translate(matrix,matrix,translateXYZ);
+    return matrix;
+}
+function toMakeViewMatrix(){
+// カメラの位置 (eye): カメラがどこに位置しているかを決定します。
+// 注視点 (center): カメラが向いている対象点を決定します。この点がカメラの前方になります。
+// 上方向 (up): カメラの「上」を定義します。これによってカメラの「ヨー（上下の傾き）」が決まります。
+    const matrix = mat4.create();
+    const cameraPosition = {
+        x:0,
+        y:1.0,
+        z:0,
+    }
+    const cameraTarget = {
+        x:0,
+        y:0,
+        z:0,
+    }
+    const cameraUp = {
+        x:0,
+        y:1.0,
+        z:0,
+    }
+    mat4.lookAt(matrix, [cameraPosition.x, cameraPosition.y, cameraPosition.z], [cameraTarget.x, cameraTarget.y, cameraTarget.z], [cameraUp.x, cameraUp.y, cameraUp.z]);
+    return matrix;
+}
+function toMakeProjectionMatrix(){
+    const matrix = mat4.create();
+    const fieldOfView = 45 * Math.PI / 180;   // in radians
+    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    const zNear = 0.1;
+    const zFar = 100.0;
+    mat4.perspective(matrix,fieldOfView, canvas.width / canvas.height, zNear, zFar);
+    return matrix;
+}
+
+function toSetupUniformVariable(program,variable,value){
+    const location = gl.getUniformLocation(program,variable);
+    gl.uniform1f(location,value);
+}
+function toSetupMatrix(program,variable,matrix){
+   const location = gl.getUniformLocation(program,variable);
+   if (location === null) {
+        console.error(`Uniform matrix ${variable} not found`);
+        return;
+    }
+   gl.uniformMatrix4fv(
+            location,
+            false,
+            matrix);
+}
+// ****データを作る*****************************************************************************
+function toMakeBufferArray(verOrColor){
+    const vertexBuffer = [0.5,0.5,0.4];
+    const colorBuffer = [1.0, 1.0, 1.0, 1.0]; // RGBA
+    if(verOrColor==="vertex"){
+        return vertexBuffer
+    }
+    return colorBuffer
+}
+const vertexBuffer = toMakeBufferArray("vertex")
+const colorBuffer = toMakeBufferArray("color")
+const ProjectionMatrixArray = toMakeProjectionMatrix();
+const ViewMatrixArray = toMakeViewMatrix();
+const ModelMatrixArray = toMakeModelMatrix();
+// ＊＊＊実際にデータを送る＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+toMakeBufferAndSetupVertexVariable(myProgram,gl.ARRAY_BUFFER,vertexBuffer,'a_position',3)
+toMakeBufferAndSetupVertexVariable(myProgram,gl.ARRAY_BUFFER,colorBuffer ,'a_color',4)
+
+toSetupUniformVariable(myProgram,'u_size',10.0);
+toSetupMatrix(myProgram,'mat_projectionMatrix',ProjectionMatrixArray)
+toSetupMatrix(myProgram,'mat_viewMatrix',ViewMatrixArray)
+toSetupMatrix(myProgram,'mat_modelMatrix',ModelMatrixArray)
+
+numParticles=1
+gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // 背景をクリア
+gl.drawArrays(gl.POINTS, 0, numParticles);
+
+
+
+</script>
+</body>
+</html>

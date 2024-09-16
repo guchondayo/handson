@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere with Phong Shading</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<style>
+  #glCanvas {
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+  }
+</style>
+<script>
+const canvas = document.getElementById("glCanvas");
+const gl = canvas.getContext('webgl');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+gl.viewport(0,0,canvas.width,canvas.height);
+
+// シェーダはちゃんと自分が誰なのか言ってくれるし
+// ソースとの協調性もいい
+// 頂点・フラグメントシェーダ
+const toMakeEachShader = (type, source) =>{
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.error("Error compiling shader", gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
+  }
+  return shader;
+}
+// カンマを忘れるとエラーになる
+// 行列って書ける順番めちゃ大事らしい。あー。そっか、かけているのがただの数字じゃなくて配列だから、所定の位置と所定の位置を計算しないとだめなのか
+const starVertexShaderSource = `
+  attribute vec3 a_position;
+  uniform mat4 u_modelMatrix;
+  uniform mat4 u_viewMatrix;
+  uniform mat4 u_projectionMatrix;
+  attribute vec4 a_color;
+  varying vec4 v_color;  // フラグメントシェーダーに渡すための varying 変数
+  void main(void){
+    gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vec4(a_position, 1.0);
+    v_color = a_color;
+    gl_PointSize = 0.1;
+  }
+`
+const starFragmentShaderSource = `
+  precision mediump float;
+  varying vec4 v_color;  // 頂点シェーダーから受け取る varying 変数
+
+  void main(void){
+    gl_FragColor = v_color;  // フラグメントカラーを設定
+  }
+`;
+// よくソースをまちがえていれるから気を付けてね
+const starVertexShader = toMakeEachShader(gl.VERTEX_SHADER, starVertexShaderSource);
+const starFragmentShader = toMakeEachShader(gl.FRAGMENT_SHADER, starFragmentShaderSource);
+
+const toMakeProgram = (vertexShadeSource,fragmentShaderSource)=>{
+  const program = gl.createProgram();
+  gl.attachShader(program,vertexShadeSource);
+  gl.attachShader(program,fragmentShaderSource);
+  gl.linkProgram(program);
+  gl.useProgram(program);
+  return program
+}
+
+const starProgram = toMakeProgram(starVertexShader, starFragmentShader);
+gl.useProgram(starProgram); // プログラムを使用(ここにいれたほうがかくじつ？)
+
+// ★頂点データを作るのにやるべきこと
+// ①準備＊＊＊＊＊＊＊＊
+// 1.頂点の数を決める
+// 2.空のバッファを作る（容量）
+// 3.XYZを作成（3つ）
+// 4.要素の数を確定する
+// ②forで回す＊＊＊＊＊＊＊＊
+// 1.０からスタート
+// 2.iが３ごとに増えているので、100回転するために300にする
+// 3.iは3ごと増える（１頂点ごとに更新する方法）１回転でXYZをまとめて更新してしまおう作戦
+const aNumberOfVertex = 100000;
+const xyz = 3;
+const aNumverofElement = aNumberOfVertex * xyz;
+const starEmptyArray = new Float32Array(aNumverofElement); // 頂点データ用の配列
+// *重要な考え方として、多くの処理を要するときはあらかじめBITやNEWARRAYをつかって部屋を予約すると処理が速くなる（ビットの確保）
+
+for (let i=0; i < aNumverofElement ; i+=xyz){
+  // ★100回繰り返す間にやっておくこと
+  // 3.1、Xには何とか、ｙには何とか、ｚには何とか
+  // 1.Ｘに入れる値は、そのままｉ 0+0 0+3 0+6　にプッシュする
+  // 2.Yに入れる値は、+1 1+0 1+3 1+6 にプッシュする
+  // 3.Zに入れる値は、+2 2+0 2+3 2+6　にプッシュする
+  // *余裕があれば＋と-の方向性も決めよう
+    // 判定を決めて、もしtrueだったら＋、falseだったら-
+  const XplusOrMinas = Math.random();
+  const YplusOrMinas = Math.random();
+  const ZplusOrMinas = Math.random();
+  starEmptyArray[i] = XplusOrMinas > 0.5 ? 10.0 * Math.random() : -1.0 * Math.random();
+  starEmptyArray[i+1] = YplusOrMinas > 0.5 ? 10.0 * Math.random() : -1.0 * Math.random();
+  starEmptyArray[i+2] = ZplusOrMinas > 0.5 ? 10.0 * Math.random() : -1.0 * Math.random();
+// 別解（乱数）
+  // vertexArray[i] = Math.random() * 2 - 1; // -1から1の範囲で乱数を生成
+}
+// ★別解[]に直接XYZをいれる方法
+// 頂点データの作成
+// const aNumberOfVertex = 100;
+// const starEmptyArray = new Float32Array(aNumberOfVertex * 3);  // 3つの座標成分を持つ頂点データの配列
+
+// for (let i = 0; i < aNumberOfVertex; i++) {
+//   const XplusOrMinas = Math.random();
+//   const YplusOrMinas = Math.random();
+//   const ZplusOrMinas = Math.random();
+//   starEmptyArray[i * 3] = XplusOrMinas > 0.5 ? 1.0 * Math.random() : -1.0 * Math.random();
+//   starEmptyArray[i * 3 + 1] = YplusOrMinas > 0.5 ? 1.0 * Math.random() : -1.0 * Math.random();
+//   starEmptyArray[i * 3 + 2] = ZplusOrMinas > 0.5 ? 1.0 * Math.random() : -1.0 * Math.random();
+// }
+console.log(starEmptyArray);
+
+const tosendBuffer = (type,bufferArray) =>{
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(type,buffer);
+  gl.bufferData(type,bufferArray,gl.STATIC_DRAW);
+}
+tosendBuffer(gl.ARRAY_BUFFER,starEmptyArray)
+// おさらい
+// 頂点バッファ: 頂点の数 × 3（XYZ）
+// カラーバッファ: 頂点の数 × 4（RGBA）
+// インデックスバッファ: 描画する図形のタイプや数によって異なる（たとえば、三角形なら三角形の数 × 3）
+
+// Q:送ったバッファが頂点かカラーかわからねぇじゃねぇじゃんｗ⇒
+// ★『直前のバッファ』が『gl.getAttribLocation』で初めて頂点かカラーかわかるってことか
+// ★インダイスの区別は『gl.ELEMENT_ARRAY_BUFFER』が『gl.drawerement』があるから区別しやすい
+// ★つまり『enableまでがバッファだぞ』と覚えます
+
+const toReceiveFromShaderToDataVertex = (program,varName) =>{
+  const attribName = gl.getAttribLocation(program,varName);
+  gl.vertexAttribPointer(attribName, 3, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(attribName);
+}
+toReceiveFromShaderToDataVertex(starProgram,'a_position')
+
+const colorArray = new Float32Array(aNumberOfVertex * 4); // 400個の要素を持つカラーバッファ
+const rgba = 4;
+const aNumverofElementOfColor = aNumberOfVertex * xyz;
+  for (let i = 0; i < aNumberOfVertex; i++) {
+    colorArray[i * 4] = Math.random(); // 0から1の範囲で乱数を生成
+    colorArray[i * 4 + 1] = Math.random();
+    colorArray[i * 4 + 2] = Math.random();
+    colorArray[i * 4 + 3] = 1.0; // アルファは1.0に固定
+  }
+const toReceiveFromShaderToDataColor = (program,varName) =>{
+  const attribName = gl.getAttribLocation(program,varName);
+  gl.vertexAttribPointer(attribName, 4, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(attribName);
+}
+toReceiveFromShaderToDataColor(starProgram,'a_color')
+
+
+// 行列の設定
+const modelMatrix = mat4.create();
+const viewMatrix = mat4.create();
+const projectionMatrix = mat4.create();
+
+// モデル行列を単位行列に設定
+mat4.identity(modelMatrix);
+
+// ビュー行列をカメラの位置に設定
+mat4.lookAt(viewMatrix, [5, 0, 5], [0, 0, 0], [0, 1, 0]);
+
+// プロジェクション行列を透視投影に設定
+mat4.perspective(projectionMatrix, Math.PI / 4, canvas.width / canvas.height, 0.1, 100);
+
+// 行列をシェーダーに送信
+const setUniformMatrix = (name, matrix) => {
+    const location = gl.getUniformLocation(starProgram, name);
+    gl.uniformMatrix4fv(location, false, matrix);
+};
+setUniformMatrix('u_modelMatrix', modelMatrix);
+setUniformMatrix('u_viewMatrix', viewMatrix);
+setUniformMatrix('u_projectionMatrix', projectionMatrix);
+
+gl.drawArrays(gl.POINTS, 0, aNumberOfVertex); // モードをPOINTSに設定し、1つの頂点を描画
+// ***おぼえとけ！！！！！！！！**
+// わかりました、、くそみたいな凡ミスでした
+// gl_pointなのに、gl_PointSizeを書き忘れてました。本間に死んだほうがいい
+</script>
+</body>
+</html>

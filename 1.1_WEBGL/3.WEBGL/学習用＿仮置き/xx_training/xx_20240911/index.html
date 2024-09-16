@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere with Phong Shading</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<style>
+    #glCanvas {
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+    }
+</style>
+<script>
+const canvas = document.getElementById("glCanvas");
+let gl = canvas.getContext('webgl');
+if (!gl) {
+    console.error('WebGL not supported, falling back on experimental-webgl');
+    gl = canvas.getContext('experimental-webgl');
+}
+
+if (!gl) {
+    alert('Your browser does not support WebGL');
+}
+
+function initScreen(){
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+}
+initScreen();
+
+const VertexShaderSource = `
+attribute vec4 aVertexPosition;
+attribute vec3 aVertexNormal;
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+uniform mat4 uNormalMatrix;
+varying highp vec3 vLighting;
+
+void main(void) {
+    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+    highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
+    highp vec3 directionalLightColor = vec3(1, 1, 1);
+    highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+    highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
+    highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
+    vLighting = ambientLight + (directionalLightColor * directional);
+}
+`;
+
+const FragmentShaderSource = `
+varying highp vec3 vLighting;
+void main(void) {
+    gl_FragColor = vec4(vLighting, 1.0);
+}
+`;
+
+function createShader(type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+
+function createProgram(vertexShaderSource, fragmentShaderSource) {
+    const vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderSource);
+    const fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error('Program link error:', gl.getProgramInfoLog(program));
+        return null;
+    }
+    gl.useProgram(program);
+    return program;
+}
+
+const program = createProgram(VertexShaderSource, FragmentShaderSource);
+
+// *******************************************************************************
+function createBuffers(lat, lon, rad) {
+    const latitudeBands = lat;
+    const longitudeBands = lon;
+    const radius = rad;
+
+    const positions = [];
+    const normals = [];
+    const indices = [];
+
+    for (let latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+        const theta = latNumber * Math.PI / latitudeBands;
+        const sinTheta = Math.sin(theta);
+        const cosTheta = Math.cos(theta);
+
+        for (let longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+            const phi = longNumber * 2 * Math.PI / longitudeBands;
+            const sinPhi = Math.sin(phi);
+            const cosPhi = Math.cos(phi);
+
+            const x = cosPhi * sinTheta;
+            const y = cosTheta;
+            const z = sinPhi * sinTheta;
+
+            positions.push(radius * x);
+            positions.push(radius * y);
+            positions.push(radius * z);
+
+            normals.push(x);
+            normals.push(y);
+            normals.push(z);
+        }
+    }
+
+    for (let latNumber = 0; latNumber < latitudeBands; latNumber++) {
+        for (let longNumber = 0; longNumber < longitudeBands; longNumber++) {
+            const first = (latNumber * (longitudeBands + 1)) + longNumber;
+            const second = first + longitudeBands + 1;
+            indices.push(first);
+            indices.push(second);
+            indices.push(first + 1);
+
+            indices.push(second);
+            indices.push(second + 1);
+            indices.push(first + 1);
+        }
+    }
+
+    return {
+        positions: new Float32Array(positions),
+        normals: new Float32Array(normals),
+        indices: new Uint16Array(indices)
+    };
+}
+// ***********************************************************************************
+function initBuffer(type, data) {
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(type, buffer);
+    gl.bufferData(type, data, gl.STATIC_DRAW);
+    return buffer;
+}
+// 1.バッファとアトリビュートはすぐにとっかかったほうがいいかもしれない。
+// なぜならインダイス以外はアトリビュートしないとだめってことは確定しているからである。
+function setAttribute(program, buffer, attribute, size) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    const location = gl.getAttribLocation(program, attribute);
+    gl.vertexAttribPointer(location, size, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(location);
+}
+
+function setUniformMatrix(program, name, matrix) {
+    const location = gl.getUniformLocation(program, name);
+    gl.uniformMatrix4fv(location, false, matrix);
+}
+
+const sphereBuffers = createBuffers(60, 60, 1);
+const positionBuffer = initBuffer(gl.ARRAY_BUFFER, sphereBuffers.positions);
+const normalBuffer = initBuffer(gl.ARRAY_BUFFER, sphereBuffers.normals);
+const indexBuffer = initBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereBuffers.indices);
+
+setAttribute(program, positionBuffer, 'aVertexPosition', 3);
+setAttribute(program, normalBuffer, 'aVertexNormal', 3);
+
+function drawSphere(position, scale) {
+    const projectionMatrix = mat4.create();
+    mat4.perspective(projectionMatrix, 45 * Math.PI / 180, canvas.width / canvas.height, 0.1, 100.0);
+    const modelViewMatrix = mat4.create();
+    mat4.translate(modelViewMatrix, modelViewMatrix, position);
+    mat4.scale(modelViewMatrix, modelViewMatrix, [scale, scale, scale]);
+    const normalMatrix = mat4.create();
+    mat4.invert(normalMatrix, modelViewMatrix);
+    mat4.transpose(normalMatrix, normalMatrix);
+
+    setUniformMatrix(program, 'uProjectionMatrix', projectionMatrix);
+    setUniformMatrix(program, 'uModelViewMatrix', modelViewMatrix);
+    setUniformMatrix(program, 'uNormalMatrix', normalMatrix);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.drawElements(gl.TRIANGLES, sphereBuffers.indices.length, gl.UNSIGNED_SHORT, 0);
+}
+
+function render() {
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // ランダムな位置とスケールで10個の球体を描画
+    for (let i = 0; i < 10; i++) {
+        const x = Math.random() * 4 - 2; // -2.0から2.0の範囲
+        const y = Math.random() * 4 - 2; // -2.0から2.0の範囲
+        const z = Math.random() * -10 + -5; // -5.0から-10.0の範囲
+        const scale = Math.random() * 1.5 + 0.5; // スケールは0.5から2.0の範囲
+        drawSphere([x, y, z], scale);
+    }
+}
+
+render();
+</script>
+</body>
+</html>

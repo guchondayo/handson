@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere with Phong Shading</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<style>
+  #glCanvas {
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+  }
+</style>
+<script>
+  const canvas = document.getElementById('glCanvas');
+  const gl = canvas.getContext('webgl');
+  if(!gl){
+    console.error("WEBGLが正しく呼ばれませんでした");
+  };
+  
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0,0,canvas.width, canvas.height);
+
+//   なるほどね、ここはマット君だったんだ
+  const starVertexShaderSource = `
+    attribute vec3 star_position;
+    uniform float star_size;
+    uniform mat4 u_model_matrix;
+    uniform mat4 u_view_matrix;
+    uniform mat4 u_projection_matrix;
+    void main(void){
+        gl_Position =  u_model_matrix * u_view_matrix * u_projection_matrix * vec4(star_position,1.0);
+        gl_PointSize = star_size;
+    }
+    `
+  
+  const starFragmentShaderSource = `
+    precision mediump float;
+        void main(void) {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); // 白い色の星
+   
+     }
+    `
+  
+  const toMakeShaderFunc = (type,source) =>{
+    console.log(type,source);
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader,source);
+    gl.compileShader(shader);
+    return shader;
+  }
+  const starVertexShader = toMakeShaderFunc(gl.VERTEX_SHADER,starVertexShaderSource);
+  const starFragmentShader = toMakeShaderFunc(gl.FRAGMENT_SHADER,starFragmentShaderSource);
+  console.log (starVertexShader,starFragmentShader)
+  const toMakeShaderProgramFunc = (vertexShader,fragmentShader) =>{
+    const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.error('プログラムのリンクに失敗しました:', gl.getProgramInfoLog(program));
+            gl.deleteProgram(program);
+            return null;
+         }
+        gl.useProgram(program);
+        return program;
+  }
+
+  const starProgram = toMakeShaderProgramFunc(starVertexShader, starFragmentShader);
+  console.log('starProgram', starProgram)
+
+  const starBufferArray = new Float32Array([
+    0.1,0.1,0.0,
+  ])
+  const toMakeBuffer = (type,bufferArray) => {
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(type, buffer);
+    gl.bufferData(type,bufferArray,gl.STATIC_DRAW);
+    return buffer
+  }
+  const starBuffer = toMakeBuffer(gl.ARRAY_BUFFER,starBufferArray);
+//   attribute vec3 star_position;
+//   uniform float star_size;
+  const star_position = gl.getAttribLocation(starProgram,'star_position');
+  gl.vertexAttribPointer(star_position, 3, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(star_position);
+
+  const star_size = gl.getUniformLocation(starProgram,'star_size');
+  gl.uniform1f(star_size, 100.0);
+  
+  const toMakeModelMatrix = () =>{
+    const mat = mat4.create();
+    // 面白い合言葉ですね！「モデルモデルXYZ」なら、3Dグラフィックスの行列変換にまつわる「モデル変換 (Model Transform)」を思い出しやすくなりそうです。
+          mat4.translate(mat,mat,[0.0,0.0,0.0]);
+    // これはモデルモデルラジアンとなずけよう（180度がラジアンますPI）
+          mat4.rotateZ(mat,mat, Math.PI / 4);
+    // これはモデルモデルXYZとなずけよう
+          mat4.scale(mat, mat, [1.0, 1.0, 1.0]); // XYZ軸すべてで3倍に拡大
+          return mat
+  }
+
+  const modelMatrix = toMakeModelMatrix();
+  const toMakeViewMatrix = ()=>{
+    // ルックアット！待ってくすずくすずくすず
+    const mat = mat4.create();
+        mat4.lookAt(mat,[1.0,0.1,0.1],[1.0,0.1,0.1],[1.0,0.1,0.1])
+        return mat
+  }
+  
+  const viewMatrix = toMakeViewMatrix();
+
+  const toMakeProjectionMatrix = () =>{
+      // フォー！アスーニアニアファー
+    //   マットHG出川アス
+      const mat = mat4.create();
+      const fov = (45 * Math.PI) / 180;  // 視野角（ラジアン）
+      const aspect = canvas.width / canvas.height;  // アスペクト比
+      const near = 0.1;  // 近いクリップ面
+      const far = 100.0;  // 遠いクリップ面
+      mat.perspective(mat,fov,aspect,near,far)
+      return mat;
+  }
+  const projectionMatrix = toMakeViewMatrix();
+
+    //   シェーダへ送信してください
+  const toSendShaderFunc = (program,shaderVari,matrix) => {
+        const u_projectionMatrix = gl.getUniformLocation(program, shaderVari);
+        //　間にfalseをはさむ
+        gl.uniformMatrix4fv(u_projectionMatrix,false,matrix)
+  }
+  toSendShaderFunc(starProgram, 'u_model_matrix', modelMatrix);
+  toSendShaderFunc(starProgram, 'u_view_matrix', viewMatrix);
+  toSendShaderFunc(starProgram, 'u_projection_matrix', projectionMatrix);
+
+  gl.drawArrays(gl.POINTS, 0, 1); // POINTSモードで1つの頂点を描画
+</script>
+</body>
+</html>
+ごめん、コメントを消さないでもう一度治せる？

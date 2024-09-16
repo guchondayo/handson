@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Draw Modes</title>
+    <style>
+        #glCanvas {
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('glCanvas');
+    const gl = canvas.getContext('webgl');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    gl.viewport(0, 0, canvas.width, canvas.height);
+
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    const vertexShaderSource = `
+        attribute vec3 a_position;
+        uniform float a_size;
+        uniform mat4 u_matrix;
+        uniform mat4 u_view;
+        uniform mat4 u_projection;
+
+        void main(void) {
+            gl_Position = vec4(a_position, 1.0);
+            gl_PointSize = a_size;
+        }
+    `;
+    gl.shaderSource(vertexShader, vertexShaderSource);
+    gl.compileShader(vertexShader);
+
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    const fragmentSource = `
+        void main(void) {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);        
+        }
+    `;
+    gl.shaderSource(fragmentShader, fragmentSource);
+    gl.compileShader(fragmentShader);
+
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
+
+    const vertexBuffer = gl.createBuffer();
+    const vertexArray = new Float32Array([
+        0.1, 0.0, 0.0,
+        0.0, 0.1, 0.0,
+        0.0, 0.0, 0.1,
+        0.0, 0.1, 0.0,
+        0.1, 0.0, 0.1,
+        0.0, 0.1, 0.0,
+        0.1, 0.0, 0.0,
+        0.0, 0.0, 0.1,
+    ]);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertexArray, gl.STATIC_DRAW);
+
+    const a_position = gl.getAttribLocation(shaderProgram, 'a_position');
+    gl.enableVertexAttribArray(a_position);
+    gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 0, 0);
+
+    const a_size = gl.getUniformLocation(shaderProgram, 'a_size');
+    gl.uniform1f(a_size, 10.0);
+    gl.uniform1f(a_size, 20.0);
+
+    // ☆基本
+    // バッファー X ビュー行列 X モデル行列 X プロジェクション行列
+    // 1.行列を作る(初期値を設定する)：目的は4X4の初期行列を作ることです。
+        // 方法1,ライブラリを使う
+        // 方法2,4X4の行列を自分で作る
+        const libraryArray=mat4.create();
+        const myArray = [
+        0.0,0.0,0.0,0.0,
+        0.0,0.0,0.0,0.0,
+        0.0,0.0,0.0,0.0,
+        0.0,0.0,0.0,0.0,
+        ]
+    // 2.行列に値を挿入する：目的は4X4の行列に正しい値を入れることです
+        // 方法1:行列計算をライブラリやってもらう
+        // 方法2:行列計算を自分でやってしまう    
+        // 2-1:モデル行列:（第一引数、第二引数が同じなのは上書きしているから。メモリの使用が抑えられるらしい）
+        mat4.translate(modelMatrix, modelMatrix, [tx, ty, tz]); // 移動
+        mat4.rotateZ(modelMatrix, modelMatrix, angleZ); // Z軸回転
+        mat4.scale(modelMatrix, modelMatrix, [sx, sy, sz]); // 拡大縮小
+        // 2-2:ビュー行列:
+            // 1.マトリックス
+            // 2.見る位置
+            // 3.カメラの位置
+            // 4.上方向の角度*傾き方
+        mat4.lookAt(viewMatrix, [0.0, 0.0, 3.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+        // 2-3:プロジェクション行列:
+        const fieldOfView = 45 * Math.PI / 180;   // 視野角（45度をラジアンに変換）
+        const aspect = canvas.width / canvas.height;  // アスペクト比
+        const near = 0.1;   // ニアクリップ面
+        const far = 100.0;  // ファークリップ面
+
+        const projectionMatrix = mat4.create();
+        mat4.perspective(projectionMatrix, fieldOfView, aspect, near, far);
+
+    // 3.最後にシェーダーに送信する
+        // // ＊掛け算を行う場所を決めませんか？？
+        // パターン1：JavaScript側で計算してまとめてシェーダーに送信する
+        // パターン2：シェーダーに此処で送信してからシェーダー計算する
+        // 3-1: まとめて送信する
+        // 行列の掛け合わせ
+        // ＊かけ方
+            // 1.空の行列を作成する
+            // 2.空の行列にモデルとビューをかけたものを代入する
+            // 3.空の行列にモデルとビューをかけたものを代入する
+
+            
+        // void main(void) {
+        //     gl_Position = vec4(a_position, 1.0) * u_mvpMatrix;
+        // }
+        const mvpMatrix = mat4.create();
+            mat4.multiply(mvpMatrix, projectionMatrix, viewMatrix);
+            mat4.multiply(mvpMatrix, mvpMatrix, modelMatrix);
+
+        // これをシェーダーに送信
+        const u_mvpMatrix = gl.getUniformLocation(shaderProgram, 'u_mvpMatrix');
+        gl.uniformMatrix4fv(u_mvpMatrix, false, mvpMatrix);
+
+
+        // void main(void) {
+        //     gl_Position = u_projection * u_view * u_model * vec4(a_position, 1.0);
+        // }
+        // ＊勘違いしてはいけない変数は1つだ。
+        // モデル行列
+        const u_modelMatrixArray = mat4.create(); // 単位行列を作成
+        mat4.translate(u_modelMatrixArray, u_modelMatrixArray, [0.1, 0.1, 0.5]); // モデルの位置を移動
+
+        const u_model = gl.getUniformLocation(program, 'u_model'); // シェーダー内のu_model変数の場所を取得
+        gl.uniformMatrix4fv(u_model, false, u_modelMatrixArray); // モデル行列をシェーダーに送信
+
+        // ビュー行列
+        const u_viewMatrixArray = mat4.create(); // 単位行列を作成
+        mat4.lookAt(u_viewMatrixArray, [0.1, 0.1, 0.1], [0.1, 0.1, 0.5], [0, 1, 0]); // カメラの位置と向きを設定
+
+        const u_view = gl.getUniformLocation(program, 'u_view'); // シェーダー内のu_view変数の場所を取得
+        gl.uniformMatrix4fv(u_view, false, u_viewMatrixArray); // ビュー行列をシェーダーに送信
+
+        // プロジェクション行列
+        const u_perspectiveMatrixArray = mat4.create(); // 単位行列を作成
+        const fieldOfView = Math.PI / 4; // 視野角 (45度)
+        const aspect = canvas.width / canvas.height; // アスペクト比
+        const near = 0.1; // ニアクリップ面
+        const far = 100.0; // ファークリップ面
+        mat4.perspective(u_perspectiveMatrixArray, fieldOfView, aspect, near, far); // プロジェクション行列を作成
+
+        const u_projection = gl.getUniformLocation(program, 'u_projection'); // シェーダー内のu_projection変数の場所を取得
+        gl.uniformMatrix4fv(u_projection, false, u_perspectiveMatrixArray); // プロジェクション行列をシェーダーに送信
+
+        // void main(void) {
+        //     gl_Position = u_projection * u_view * u_model * vec4(a_position, 1.0);
+        // }
+
+
+
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.POINTS, 0, 8);
+</script>
+</body>
+</html>

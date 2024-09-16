@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere with Phong Shading</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<style>
+    #glCanvas {
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+    }
+</style>
+<script>
+// 1.canvasとglオブジェクトを取得する
+const canvas = document.getElementById("glCanvas");
+const gl = canvas.getContext('webgl');
+// エラーハンドリング
+if (!gl) {
+    console.error('WebGL not supported, falling back on experimental-webgl');
+    gl = canvas.getContext('experimental-webgl');
+}
+
+if (!gl) {
+    alert('Your browser does not support WebGL');
+}
+
+// 2.画面の設定を行う
+function initScreen(){
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+}
+initScreen();
+
+// 3.シェーダの作成
+const starVertexShader = 
+`
+attribute vec4 a_position;
+uniform mat4 u_projectionMatrix;
+uniform mat4 u_viewMatrix;
+uniform mat4 u_modelMatrix;
+void main(void){
+    gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * a_position;
+}
+`
+</script>
+</body>
+</html>

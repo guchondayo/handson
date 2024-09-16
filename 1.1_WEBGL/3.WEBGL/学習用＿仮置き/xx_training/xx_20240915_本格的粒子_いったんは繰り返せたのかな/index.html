@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Sphere with Phong Shading</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<style>
+    #glCanvas {
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+    }
+</style>
+<script>
+const canvas = document.getElementById("glCanvas");
+const gl = canvas.getContext('webgl');
+
+// キャンバスサイズ設定
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+gl.viewport(0, 0, canvas.width, canvas.height);
+
+if (!gl) {
+    console.error("WEBGLが読み取れていません");
+}
+
+// シェーダー作成
+function toMakeShader(type, sourceCode) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, sourceCode);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        return null;
+    }
+    return shader;
+}
+
+const myVertexSourceCode = `
+    attribute vec3 a_position;
+    uniform float u_size;
+    uniform mat4 mat_projectionMatrix;
+    uniform mat4 mat_viewMatrix;
+    uniform mat4 mat_modelMatrix;
+    attribute vec4 a_color;
+    varying vec4 v_color;
+    void main(void){
+        gl_Position = mat_projectionMatrix * mat_viewMatrix * mat_modelMatrix * vec4(a_position, 1.0);
+        gl_PointSize = u_size;
+        v_color = a_color;
+    } 
+`;
+
+const myFragmentSourceCode = `
+    precision mediump float;
+    varying vec4 v_color;
+    void main(void){
+        gl_FragColor = v_color;
+    }
+`;
+
+const myVertexShader = toMakeShader(gl.VERTEX_SHADER, myVertexSourceCode);
+const myFragmentShader = toMakeShader(gl.FRAGMENT_SHADER, myFragmentSourceCode);
+
+// プログラム作成
+function toMakeProgram(vertexShader, fragmentShader) {
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error('Program link error:', gl.getProgramInfoLog(program));
+        return null;
+    }
+    gl.useProgram(program);
+    return program;
+}
+
+const myProgram = toMakeProgram(myVertexShader, myFragmentShader);
+
+// バッファ作成と設定
+function toMakeBufferAndSetupVertexVariable(program, arrayType, bufferArray, variable, xyzOrRgba) {
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(arrayType, buffer);
+    gl.bufferData(arrayType, new Float32Array(bufferArray), gl.STATIC_DRAW);
+    const location = gl.getAttribLocation(program, variable);
+    gl.vertexAttribPointer(location, xyzOrRgba, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(location);
+    return buffer;
+}
+
+// 行列設定
+function toMakeModelMatrix() {
+    const matrix = mat4.create();
+    const translateXYZ = [0.0, 0.0, 0.0];
+    mat4.translate(matrix, matrix, translateXYZ);
+    return matrix;
+}
+
+function toMakeViewMatrix() {
+    const matrix = mat4.create();
+    const cameraPosition = [0, 1.0, 5.0];
+    const cameraTarget = [0, 0, 0];
+    const cameraUp = [0, 1.0, 0];
+    mat4.lookAt(matrix, cameraPosition, cameraTarget, cameraUp);
+    return matrix;
+}
+
+function toMakeProjectionMatrix() {
+    const matrix = mat4.create();
+    const fieldOfView = 45 * Math.PI / 180;
+    const aspect = canvas.width / canvas.height;
+    const zNear = 0.1;
+    const zFar = 100.0;
+    mat4.perspective(matrix, fieldOfView, aspect, zNear, zFar);
+    return matrix;
+}
+
+function toSetupUniformVariable(program, variable, value) {
+    const location = gl.getUniformLocation(program, variable);
+    gl.uniform1f(location, value);
+}
+
+function toSetupMatrix(program, variable, matrix) {
+    const location = gl.getUniformLocation(program, variable);
+    if (location === null) {
+        console.error(`Uniform matrix ${variable} not found`);
+        return;
+    }
+    gl.uniformMatrix4fv(location, false, matrix);
+}
+const numParticles = 10;
+function toMakeBufferArray(){
+    // データ作成
+const vertexBuffer = [];
+const colorBuffer = [];
+
+    for (let i = 0; i < numParticles; i++) {
+        vertexBuffer.push(1.0 - 0.01 * i);
+        vertexBuffer.push(1.0);
+        vertexBuffer.push(1.0);
+        colorBuffer.push(1.0);
+        colorBuffer.push(0.5);
+        colorBuffer.push(0.0);
+        colorBuffer.push(1.0);
+    }
+    return {vertexBuffer,colorBuffer}
+}
+const vertexBuffer = toMakeBufferArray().vertexBuffer;
+const colorBuffer = toMakeBufferArray().colorBuffer;
+
+const ProjectionMatrixArray = toMakeProjectionMatrix();
+const ViewMatrixArray = toMakeViewMatrix();
+const ModelMatrixArray = toMakeModelMatrix();
+
+toMakeBufferAndSetupVertexVariable(myProgram, gl.ARRAY_BUFFER, vertexBuffer, 'a_position', 3);
+toMakeBufferAndSetupVertexVariable(myProgram, gl.ARRAY_BUFFER, colorBuffer, 'a_color', 4);
+
+toSetupUniformVariable(myProgram, 'u_size', 5,0);
+toSetupMatrix(myProgram, 'mat_projectionMatrix', ProjectionMatrixArray);
+toSetupMatrix(myProgram, 'mat_viewMatrix', ViewMatrixArray);
+toSetupMatrix(myProgram, 'mat_modelMatrix', ModelMatrixArray);
+function render(){
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.drawArrays(gl.POINTS, 0, numParticles);
+    requestAnimationFrame(render)
+}
+render()
+
+
+</script>
+</body>
+</html>
